@@ -29,7 +29,7 @@ where:
 The internal conflict value of a network $SN$ is defined as follows:
 
 $$
-\operatorname{IC}(SN) = \frac{ \sum_{ i = 0 }^{ n - 1 }{ n_i * (o_{ i,1 } - o_{ i,2 })^2 } }{ \sum_{ i = 0 }^{ n - 1 } n_i }
+\text{IC}(SN) = \frac{ \sum_{ i = 0 }^{ n - 1 }{ n_i * (o_{ i,1 } - o_{ i,2 })^2 } }{ \sum_{ i = 0 }^{ n - 1 } n_i }
 $$
 
 A **strategy for opinion change** in a network $SN$ is a sequence:
@@ -44,7 +44,7 @@ where $e_i$ indicates the number of agents in group $i$ whose opinion will be mo
 
 - $\sum_{ i = 0 }^{ n - 1 } e_i \leq \sum_{ i = 0 }^{ n - 1 } n_i$.
 
-Applying an opinion change strategy $E$ to a network $SN$, denoted as $\operatorname{ModIC}(SN,E)$, results in a new network ${SN}'$ where:
+Applying an opinion change strategy $E$ to a network $SN$, denoted as $\text{ModIC}(SN,E)$, results in a new network ${SN}'$ where:
 
 $$
 { n' }_i = n_i - e_i
@@ -55,13 +55,13 @@ It is assumed that the agents whose opinions were adjusted by $E$ are no longer 
 The **effort** required to adjust opinions in $SN$ using strategy $E$ is defined as:
 
 $$
-\operatorname{ Effort }(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
+\text{ Effort }(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
 $$
 
 A strategy $E$ is **applicable** if:
 
 $$
-\operatorname{ Effort }(SN,E) \leq R_{ \max }
+\text{ Effort }(SN,E) \leq R_{ \max }
 $$
 
 ### Input
@@ -73,13 +73,13 @@ A social network $SN = \langle SA,R_{ \max } \rangle$
 An applicable opinion change strategy $E$ for the network $SN$, meaning:
 
 $$
-\operatorname{ Effort }(SN,E) \leq R_{ \max }
+\text{ Effort }(SN,E) \leq R_{ \max }
 $$
 
 such that:
 
 $$
-\operatorname{ IC }(\operatorname{ ModIC }(SN,E))
+\text{ IC }(\text{ ModIC }(SN,E))
 $$
 
 is minimized.

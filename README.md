@@ -84,4 +84,40 @@ $$
 
 is minimized.
 
+## Analysis
+
+- Each agent in a group of agents ($a_i$) contributes
+
+	$$
+	\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil
+	$$
+
+	to the total effort. For this reason, we can say that the maximum number of agents that can be changed for a strategy ($e_i$) is
+
+	$$
+	\min(n_i,\frac{ R_{ \max } }{ \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil })
+	$$
+
+	> We use $\min$ to ensure that no more agents are moderated than are available.
+
+- Each group of agents $a_i$ contributes
+
+	$$
+	n_i * (o_{ i,1 } - o_{ i,2 })^2
+	$$
+
+	to the internal conflict. If $k$ agents from that group are **moderated**, this contribution changes to
+
+	$$
+	(n_i - k) * (o_{ i,1 } - o_{ i,2 })^2
+	$$
+
 ## Instructions to execute it
+
+- Create a Python virtual environment: `python -m venv .venv`.
+
+	> This is optional.
+
+1. Install the libraries included in `requirements.txt`: `pip install -r requirements.txt`.
+
+2. Run the main script: `python main.py`.

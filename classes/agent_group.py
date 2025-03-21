@@ -3,8 +3,8 @@ from typing import NamedTuple
 
 class AgentGroup(NamedTuple):
 	n: int
-	o_i1: int
-	o_i2: int
+	o_1: int
+	o_2: int
 	r: float
 
 
@@ -19,8 +19,8 @@ class AgentGroup(NamedTuple):
 			their opinions on both statements, and their resistance level.
 		"""
 		return f"""Group of agents with {self.n} agents
-	\to_i1 = {self.o_i1}
-	\to_i2 = {self.o_i2}
+	\to_i1 = {self.o_1}
+	\to_i2 = {self.o_2}
 	\tr = {self.r}"""
 
 def create_agent_group(n: int, o_i1: int, o_i2: int, r: float):

@@ -55,13 +55,13 @@ It is assumed that the agents whose opinions were adjusted by $E$ are no longer 
 The **effort** required to adjust opinions in $SN$ using strategy $E$ is defined as:
 
 $$
-\text{ Effort }(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
+\text{Effort}(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
 $$
 
 A strategy $E$ is **applicable** if:
 
 $$
-\text{ Effort }(SN,E) \leq R_{ \max }
+\text{Effort}(SN,E) \leq R_{ \max }
 $$
 
 ### Input
@@ -73,13 +73,13 @@ A social network $SN = \langle SA,R_{ \max } \rangle$
 An applicable opinion change strategy $E$ for the network $SN$, meaning:
 
 $$
-\text{ Effort }(SN,E) \leq R_{ \max }
+\text{Effort}(SN,E) \leq R_{ \max }
 $$
 
 such that:
 
 $$
-\text{ IC }(\text{ ModIC }(SN,E))
+\text{IC}(\text{ModIC}(SN,E))
 $$
 
 is minimized.

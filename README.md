@@ -40,6 +40,8 @@ $$
 
 where $e_i$ indicates the number of agents in group $i$ whose opinion will be modified, and the following constraints hold:
 
+- $e_i \in \mathbb{ N }$.
+
 - $0 \leq e_i \leq n_i$.
 
 - $\sum_{ i = 0 }^{ n - 1 } e_i \leq \sum_{ i = 0 }^{ n - 1 } n_i$.
@@ -88,29 +90,29 @@ is minimized.
 
 - Each agent in a group of agents ($a_i$) contributes
 
-	$$
-	\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil
-	$$
+$$
+\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil
+$$
 
-	to the total effort. For this reason, we can say that the maximum number of agents that can be changed for a strategy ($e_i$) is
+to the total effort. For this reason, we can say that the maximum number of agents that can be changed for a strategy ($e_i$) is
 
-	$$
-	\min(n_i,\frac{ R_{ \max } }{ \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil })
-	$$
+$$
+\min(n_i,\frac{ R_{ \max } }{ \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil })
+$$
 
-	> We use $\min$ to ensure that no more agents are moderated than are available.
+> We use $\min$ to ensure that no more agents are moderated than are available.
 
 - Each group of agents $a_i$ contributes
 
-	$$
-	n_i * (o_{ i,1 } - o_{ i,2 })^2
-	$$
+$$
+n_i * (o_{ i,1 } - o_{ i,2 })^2
+$$
 
-	to the internal conflict. If $k$ agents from that group are **moderated**, this contribution changes to
+to the internal conflict. If $k$ agents from that group are **moderated**, this contribution changes to
 
-	$$
-	(n_i - k) * (o_{ i,1 } - o_{ i,2 })^2
-	$$
+$$
+(n_i - k) * (o_{ i,1 } - o_{ i,2 })^2
+$$
 
 ## Instructions to execute it
 

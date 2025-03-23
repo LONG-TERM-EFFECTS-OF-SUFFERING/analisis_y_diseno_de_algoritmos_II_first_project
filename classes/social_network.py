@@ -95,7 +95,7 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 	"""
 	n = len(social_network.groups)
 	groups = social_network.groups
-	r_max = social_network.r_max
+	r_max = social_network.r_max - calculate_effort(social_network, strategy)
 
 	if len(strategy) != n:
 		raise ValueError("Error: the length of strategy must be equal to the number of agent groups")

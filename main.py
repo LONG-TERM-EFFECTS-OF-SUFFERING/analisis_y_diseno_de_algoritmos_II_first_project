@@ -1,7 +1,7 @@
 from typing import List
 
 from algorithms.brute_force import brute_force
-from algorithms.dynamic import dynamic
+from algorithms.dynamic import dynamic, get_solution_value
 from classes.agent_group import create_agent_group
 from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_effort,
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	social_network = read_input(path)
 	strategy_1 = brute_force(social_network)
 	network_1 = apply_strategy(social_network, strategy_1)
-	strategy_2  = dynamic(social_network)
+	strategy_2  = get_solution_value(social_network)
 	network_2 = apply_strategy(social_network, strategy_2)
 
 	print(social_network)

@@ -8,6 +8,49 @@ from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_internal_conflict)
 
 
+def get_solution_value(social_network: SocialNetwork):
+	groups = social_network.groups
+	n = len(groups)
+	r_max = social_network.r_max
+	solution = [0] * n
+
+	def IC(i: int, r: float):
+		if i == 0:
+			return 0
+		else: # i > 0
+			group = groups[i - 1]
+			n_i = group.n
+			o_1 = group.o_1
+			o_2 = group.o_2
+			r_i = group.r
+
+			conflict_per_agent = (o_1 - o_2) ** 2
+			effort_per_agent = abs(o_1 - o_2) * r_i
+
+			min_conflict = float("inf")
+			best_k = 0
+
+			for k in range(n_i + 1):
+				required_effort = math.ceil(effort_per_agent * k)
+
+				if required_effort <= r:
+					remaining_conflict = (n_i - k) * conflict_per_agent
+
+					value = IC(i - 1, r - required_effort) + remaining_conflict
+
+					if value < min_conflict:
+						min_conflict = value
+						best_k = k
+
+			solution[i - 1] = best_k
+
+			return min_conflict
+
+	IC(n, r_max)
+
+	return solution
+
+
 def dynamic(social_network: SocialNetwork) -> List[int]:
 	"""
 	Finds the optimal strategy to minimize internal conflict in a social network

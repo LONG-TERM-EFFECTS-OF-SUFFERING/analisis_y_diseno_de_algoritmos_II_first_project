@@ -40,6 +40,8 @@ $$
 
 where $e_i$ indicates the number of agents in group $i$ whose opinion will be modified, and the following constraints hold:
 
+- $e_i \in \mathbb{ N }$.
+
 - $0 \leq e_i \leq n_i$.
 
 - $\sum_{ i = 0 }^{ n - 1 } e_i \leq \sum_{ i = 0 }^{ n - 1 } n_i$.
@@ -55,13 +57,13 @@ It is assumed that the agents whose opinions were adjusted by $E$ are no longer 
 The **effort** required to adjust opinions in $SN$ using strategy $E$ is defined as:
 
 $$
-\text{ Effort }(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
+\text{Effort}(SN,E) = \sum_{ i = 0 }^{ n - 1 } \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot e_i \right \rceil
 $$
 
 A strategy $E$ is **applicable** if:
 
 $$
-\text{ Effort }(SN,E) \leq R_{ \max }
+\text{Effort}(SN,E) \leq R_{ \max }
 $$
 
 ### Input
@@ -73,15 +75,51 @@ A social network $SN = \langle SA,R_{ \max } \rangle$
 An applicable opinion change strategy $E$ for the network $SN$, meaning:
 
 $$
-\text{ Effort }(SN,E) \leq R_{ \max }
+\text{Effort}(SN,E) \leq R_{ \max }
 $$
 
 such that:
 
 $$
-\text{ IC }(\text{ ModIC }(SN,E))
+\text{IC}(\text{ModIC}(SN,E))
 $$
 
 is minimized.
 
+## Analysis
+
+- Each agent in a group of agents ($a_i$) contributes
+
+$$
+\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil
+$$
+
+to the total effort. For this reason, we can say that the maximum number of agents that can be changed for a strategy ($e_i$) is
+
+$$
+\min(n_i,\frac{ R_{ \max } }{ \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil })
+$$
+
+> We use $\min$ to ensure that no more agents are moderated than are available.
+
+- Each group of agents $a_i$ contributes
+
+$$
+n_i * (o_{ i,1 } - o_{ i,2 })^2
+$$
+
+to the internal conflict. If $k$ agents from that group are **moderated**, this contribution changes to
+
+$$
+(n_i - k) * (o_{ i,1 } - o_{ i,2 })^2
+$$
+
 ## Instructions to execute it
+
+- Create a Python virtual environment: `python -m venv .venv`.
+
+	> This is optional.
+
+1. Install the libraries included in `requirements.txt`: `pip install -r requirements.txt`.
+
+2. Run the main script: `python main.py`.

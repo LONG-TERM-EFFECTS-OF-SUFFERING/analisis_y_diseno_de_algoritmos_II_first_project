@@ -5,7 +5,6 @@ from classes.agent_group import AgentGroup, create_agent_group
 
 
 class SocialNetwork(NamedTuple):
-	n: int
 	groups: List[AgentGroup]
 	r_max: int
 
@@ -19,7 +18,7 @@ class SocialNetwork(NamedTuple):
 			A string describing the social network, including the number of agent groups,
 			the maximum resource value, and the internal conflict.
 		"""
-		result = f"""Social network with {self.n} agent groups and R_max = {self.r_max}
+		result = f"""Social network with {len(self.groups)} agent groups and R_max = {self.r_max}
 Internal conflict: {calculate_internal_conflict(self):.2f}
 Agent groups:
 """
@@ -55,12 +54,12 @@ def calculate_internal_conflict(social_network: SocialNetwork):
 	denominator = 0
 
 	for group in groups:
-		n_i = group.n
-		o_i1 = group.o_i1
-		o_i2 = group.o_i2
+		n = group.n
+		o_1 = group.o_1
+		o_2 = group.o_2
 
-		numerator += n_i * (o_i1 - o_i2)**2
-		denominator += n_i
+		numerator += n * (o_1 - o_2)**2
+		denominator += n
 
 	return numerator / denominator
 
@@ -94,9 +93,9 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 	-----
 	Groups where all agents are removed (e_i = n_i) will not be included in the resulting network.
 	"""
-	n = social_network.n
+	n = len(social_network.groups)
 	groups = social_network.groups
-	r_max = social_network.r_max
+	r_max = social_network.r_max - calculate_effort(social_network, strategy)
 
 	if len(strategy) != n:
 		raise ValueError("Error: the length of strategy must be equal to the number of agent groups")
@@ -104,23 +103,21 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 	modified_groups = []
 
 	for i, group in enumerate(groups):
-		n_i = group.n
+		n = group.n
 		e_i = strategy[i]
 
-		if e_i < n_i:
+		if e_i < n:
 			modified_group = create_agent_group(
-					n_i - e_i,
-					group.o_i1,
-					group.o_i2,
+					n - e_i,
+					group.o_1,
+					group.o_2,
 					group.r
 				)
 			modified_groups.append(modified_group)
-		elif e_i == n_i:
-			n -= 1
-		else: # e_i > n_i
+		elif e_i > n:
 			raise ValueError("Error: strategy value cannot be greater than the number of agents in the group")
 
-	return SocialNetwork(n, modified_groups, r_max)
+	return SocialNetwork(modified_groups, r_max)
 
 def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 	"""
@@ -152,7 +149,7 @@ def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 	-----
 	A strategy is applicable only if the calculated effort does not exceed R_max.
 	"""
-	n = social_network.n
+	n = len(social_network.groups)
 	groups = social_network.groups
 
 	if len(strategy) != n:
@@ -164,7 +161,7 @@ def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 		e_i = strategy[i]
 		if e_i > 0:
 			effort += math.ceil(
-				abs(group.o_i1 - group.o_i2) * group.r * strategy[i]
+				abs(group.o_1 - group.o_2) * group.r * strategy[i]
 			)
 
 	return effort

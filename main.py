@@ -1,9 +1,14 @@
+from typing import List
+
 from algorithms.brute_force import brute_force
-from classes.agent_group import AgentGroup, create_agent_group
-from classes.social_network import SocialNetwork, apply_strategy
+from algorithms.dynamic import dynamic, get_solution_value
+from classes.agent_group import create_agent_group
+from classes.social_network import (SocialNetwork, apply_strategy,
+                                    calculate_effort,
+                                    calculate_internal_conflict)
 
 
-def load_social_network(path: str) -> SocialNetwork:
+def read_input(path: str) -> SocialNetwork:
 	with open(path, "r") as file:
 		content = file.readlines()
 
@@ -23,25 +28,45 @@ def load_social_network(path: str) -> SocialNetwork:
 		line = content[i].strip().split()
 
 		if len(line) == 4:
-			n_i = int(line[0])
-			o_i1 = int(line[1])
-			o_i2 = int(line[2])
+			n = int(line[0])
+			o_1 = int(line[1])
+			o_2 = int(line[2])
 			r_i = float(line[3])
 
-			agent_group = create_agent_group(n_i, o_i1, o_i2, r_i)
+			agent_group = create_agent_group(n, o_1, o_2, r_i)
 			agent_groups.append(agent_group)
 		else:
 			raise ValueError(f"Error: line {i} does not contain exactly 4 elements")
 
-	return SocialNetwork(n, agent_groups, r_max)
+	return SocialNetwork(agent_groups, r_max)
+
+def write_ouput(path: str, social_network: SocialNetwork, strategy: List[int]) -> None:
+	effort = calculate_effort(social_network, strategy)
+	modified_network = apply_strategy(social_network, strategy)
+	IC = calculate_internal_conflict(modified_network)
+
+	with open(path, "w") as file:
+		file.write(f"{IC}\n")
+		file.write(f"{effort}\n")
+		file.write('\n'.join(map(str, strategy)))
 
 
 if __name__ == "__main__":
 	path = "input.txt"
-	social_network = load_social_network(path)
-	best_social_network, best_strategy, required_effort = brute_force(social_network)
+	social_network = read_input(path)
+	strategy_1 = brute_force(social_network)
+	network_1 = apply_strategy(social_network, strategy_1)
+	strategy_2  = get_solution_value(social_network)
+	network_2 = apply_strategy(social_network, strategy_2)
 
-	print("Original network:", social_network)
-	print("Best social network:", best_social_network)
-	print("Best strategy:", best_strategy)
-	print("Required effort:", required_effort)
+	print(social_network)
+
+	print("Brute force strategy:")
+	print("Strategy:", strategy_1)
+	print(network_1)
+
+	print("\nDynamic programming strategy:")
+	print("Strategy:", strategy_2)
+	print(network_2)
+
+	# write_ouput("output.txt", social_network, brute_force_strategy)

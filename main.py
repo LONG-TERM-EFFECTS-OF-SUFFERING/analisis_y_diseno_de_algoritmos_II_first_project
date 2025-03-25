@@ -39,9 +39,9 @@ def load_social_network(path: str) -> SocialNetwork:
 if __name__ == "__main__":
 	path = "input.txt"
 	social_network = load_social_network(path)
-	best_social_network, best_strategy, best_effort = brute_force(social_network)
+	best_social_network, best_strategy, required_effort = brute_force(social_network)
 
 	print("Original network:", social_network)
 	print("Best social network:", best_social_network)
 	print("Best strategy:", best_strategy)
-	print("Best effort:", best_effort)
+	print("Required effort:", required_effort)

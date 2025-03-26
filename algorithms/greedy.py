@@ -1,57 +1,77 @@
 import math
 from typing import List
+from classes.agent_group import create_agent_group
 from classes.social_network import SocialNetwork, calculate_internal_conflict, apply_strategy
+
 
 def greedy_absolute_reduction(social_network: SocialNetwork) -> List[int]:
     """
-    Implements a greedy strategy to minimize internal conflict by removing agents,
-    prioritizing those that provide the highest absolute conflict reduction per effort unit.
+    Implements the greedy strategy that selects the group with the highest absolute reduction
+    in internal conflict per unit of effort and moderates agents from it.
 
     Parameters
     ----------
-    social_network: SocialNetwork
-        The initial state of the social network.
+    social_network : SocialNetwork
+        The social network on which the greedy strategy is applied.
 
     Returns
     -------
     List[int]
-        A list representing the number of agents removed from each group.
+        A list where each element represents the number of agents moderated in the corresponding group.
+
+    Notes
+    -----
+    - The function ensures that it never moderates more agents than those available in a group.
+    - The strategy iteratively selects the best group to moderate until resources are exhausted.
     """
-    groups = social_network.groups
-    r_max = social_network.r_max
-    num_groups = len(groups)
-    strategy = [0] * num_groups  # Initialize strategy with zero removals
+    n = len(social_network.groups)
+    strategy = [0] * n  # Initialize the moderation strategy (all zeros)
+    remaining_r = social_network.r_max  # Remaining effort budget
+    groups = social_network.groups[:]
 
-    # Generate possible removals sorted by absolute conflict reduction
-    removal_options = []
+    while remaining_r > 0:
+        best_index = -1
+        best_reduction = 0
+        best_effort = float('inf')
 
-    for i, group in enumerate(groups):
-        for e_i in range(1, group.n + 1):  # Consider removing 1 to n agents (not all)
-            new_n = group.n - e_i
-            if new_n == 0:
-                continue  # Avoid removing the entire group
+        # Find the best group to moderate based on reduction per effort
+        for i, group in enumerate(groups):
+            if group.n > 0:  # Only consider groups with remaining agents
+                reduction_per_agent = (group.o_1 - group.o_2) ** 2
+                effort_per_agent = math.ceil(abs(group.o_1 - group.o_2) * group.r)
 
-            # Compute internal conflict reduction
-            original_contribution = group.n * (group.o_1 - group.o_2) ** 2
-            new_contribution = new_n * (group.o_1 - group.o_2) ** 2
-            conflict_reduction = original_contribution - new_contribution
+                if effort_per_agent <= remaining_r:
+                    reduction_ratio = reduction_per_agent / effort_per_agent if effort_per_agent > 0 else 0
+                    if reduction_ratio > best_reduction:
+                        best_reduction = reduction_ratio
+                        best_index = i
+                        best_effort = effort_per_agent
 
-            # Compute effort required
-            effort = math.ceil(abs(group.o_1 - group.o_2) * group.r * e_i)
+        # If no valid group is found, stop
+        if best_index == -1:
+            break
 
-            # Store the option (sorted by max conflict reduction first)
-            removal_options.append((conflict_reduction, effort, e_i, i))
+        # Determine how many agents we can moderate
+        group = groups[best_index]
+        max_agents_moderatable = group.n  # We can't moderate more than we have
+        max_possible = remaining_r // best_effort  # Max we can afford
 
-    # Sort by highest conflict reduction per effort spent (greedy criterion)
-    removal_options.sort(reverse=True, key=lambda x: (x[0] / x[1] if x[1] > 0 else float('inf'), x[0]))
+        agents_to_moderate = min(max_agents_moderatable, max_possible)
 
-    # Apply removals while staying within budget
-    for conflict_reduction, effort, e_i, i in removal_options:
-        if effort <= r_max:
-            strategy[i] += e_i  # Apply removal to group i
-            r_max -= effort  # Deduct effort from budget
+        if agents_to_moderate > 0:
+            strategy[best_index] += agents_to_moderate
+            remaining_r -= agents_to_moderate * best_effort  # Deduct effort spent
+
+            # Update group information
+            groups[best_index] = create_agent_group(
+                group.n - agents_to_moderate,
+                group.o_1,
+                group.o_2,
+                group.r
+            )
 
     return strategy
+
 
 
 def greedy_moderation_efficiency(social_network: SocialNetwork) -> List[int]:

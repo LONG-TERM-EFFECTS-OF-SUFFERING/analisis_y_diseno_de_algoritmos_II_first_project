@@ -9,37 +9,47 @@ from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_internal_conflict)
 
 
-def read_input(path: str) -> SocialNetwork:
-	with open(path, "r") as file:
-		content = file.readlines()
+def load_social_network_from_txt(file_path: str) -> SocialNetwork:
+    """
+    Loads a social network from a TXT file following the specified format.
 
-	first_line = content[0].strip().split()
-	n = int(first_line[0])
-	r_max = int(first_line[1])
+    Parameters
+    ----------
+    file_path : str
+        The path to the TXT file containing the social network data.
 
-	agent_groups = []
+    Returns
+    -------
+    SocialNetwork
+        A SocialNetwork object containing the agent groups and the maximum effort available.
 
-	if n > len(content) - 1:
-		raise ValueError("Error: The number of agent groups exceeds the number of lines in the file")
+    Raises
+    ------
+    ValueError
+        If the file format is incorrect or contains invalid values.
+    """
+    with open(file_path, "r") as file:
+        lines = file.readlines()
 
-	if n < len(content) - 1:
-		raise ValueError("Error: The number of agent groups is less than the number of lines in the file")
+    # Extract the number of agent groups
+    n_groups = int(lines[0].strip())
 
-	for i in range(1, n + 1):
-		line = content[i].strip().split()
+    agent_groups = []
 
-		if len(line) == 4:
-			n = int(line[0])
-			o_1 = int(line[1])
-			o_2 = int(line[2])
-			r_i = float(line[3])
+    # Extract each agent group's data
+    for i in range(1, n_groups + 1):
+        parts = lines[i].strip().split(',')
+        if len(parts) != 4:
+            raise ValueError(f"Invalid format on line {i + 1}: {lines[i]}")
 
-			agent_group = create_agent_group(n, o_1, o_2, r_i)
-			agent_groups.append(agent_group)
-		else:
-			raise ValueError(f"Error: line {i} does not contain exactly 4 elements")
+        n, o_1, o_2, r = int(parts[0]), int(parts[1]), int(parts[2]), float(parts[3])
+        agent_groups.append(create_agent_group(n, o_1, o_2, r))
 
-	return SocialNetwork(agent_groups, r_max)
+    # Extract the maximum effort available
+    r_max = int(lines[n_groups + 1].strip())
+
+    return SocialNetwork(agent_groups, r_max)
+
 
 def write_ouput(path: str, social_network: SocialNetwork, strategy: List[int]) -> None:
 	effort = calculate_effort(social_network, strategy)
@@ -53,8 +63,9 @@ def write_ouput(path: str, social_network: SocialNetwork, strategy: List[int]) -
 
 
 if __name__ == "__main__":
-	path = "prueba4.txt"
-	social_network = read_input(path)
+	path = "BateriaPruebas/Prueba2.txt"
+
+	social_network = load_social_network_from_txt(path)
 	strategy_1 = brute_force(social_network)
 	network_1 = apply_strategy(social_network, strategy_1)
 	strategy_2  = get_solution_value(social_network)

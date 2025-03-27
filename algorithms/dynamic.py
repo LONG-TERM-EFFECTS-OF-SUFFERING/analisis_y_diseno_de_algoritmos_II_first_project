@@ -107,7 +107,7 @@ def dynamic(social_network: SocialNetwork) -> List[int]:
 
 				if required_effort <= r:
 					# Calculate remaining conflict after moderating k agents
-					remaining_conflict = math.ceil((n_i - k) * conflict_per_agent)
+					remaining_conflict = (n_i - k) * conflict_per_agent
 
 					# Total conflict = optimal conflict for previous groups + remaining conflict
 					total_conflict = storage[i - 1, r - required_effort] + remaining_conflict

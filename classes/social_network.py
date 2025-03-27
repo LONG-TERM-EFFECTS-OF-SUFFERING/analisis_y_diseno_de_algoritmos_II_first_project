@@ -36,7 +36,7 @@ def calculate_internal_conflict(social_network: SocialNetwork):
 	opinions for each agent group.
 
 	Formula:
-	IC(SN) = (∑(n_i * (o_i,1 - o_i,2)²)) / (∑n_i)
+	IC(SN) = (∑(n_i * (o_i,1 - o_i,2)²)) / n
 
 	Parameters
 	----------
@@ -51,7 +51,7 @@ def calculate_internal_conflict(social_network: SocialNetwork):
 	groups = social_network.groups
 
 	numerator = 0
-	denominator = 0
+	denominator = len(groups) if len(groups) > 0 else 1
 
 	for group in groups:
 		n = group.n
@@ -59,7 +59,7 @@ def calculate_internal_conflict(social_network: SocialNetwork):
 		o_2 = group.o_2
 
 		numerator += n * (o_1 - o_2)**2
-		denominator += n
+		#denominator += n
 
 	return numerator / denominator
 
@@ -106,7 +106,7 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 		n = group.n
 		e_i = strategy[i]
 
-		if e_i < n:
+		if e_i <= n:
 			modified_group = create_agent_group(
 					n - e_i,
 					group.o_1,

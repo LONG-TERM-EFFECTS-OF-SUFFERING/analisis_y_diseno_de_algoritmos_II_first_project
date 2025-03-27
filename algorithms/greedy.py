@@ -189,3 +189,59 @@ def greedy_moderation_by_discrepancy_rigidity(social_network: SocialNetwork) -> 
             break  # Stop if we can't afford the next moderation step
 
     return strategy
+
+
+def greedy_moderation_by_discrepancy(social_network: SocialNetwork) -> List[int]:
+    """
+    Implements a greedy moderation strategy that selects the group with the highest discrepancy
+    (|o_1 - o_2|) and moderates one agent at a time until the budget (r_max) is exhausted.
+
+    Parameters
+    ----------
+    social_network : SocialNetwork
+        The social network containing agent groups and the available effort budget.
+
+    Returns
+    -------
+    List[int]
+        A list where each index represents an agent group, and the value at that index represents
+        the number of agents moderated from that group.
+
+    Notes
+    -----
+    - The function iteratively selects the group with the highest |o_1 - o_2| / r ratio.
+    - It ensures that the effort spent does not exceed the maximum allowed (r_max).
+    - If multiple groups have the same ratio, it prioritizes the first one found.
+    """
+    n = len(social_network.groups)
+    strategy = [0] * n  # Initialize strategy with zero moderation for all groups
+    remaining_budget = social_network.r_max
+
+    while remaining_budget > 0:
+        # Select the group with the highest discrepancy-to-rigidity ratio
+        best_index = -1
+        best_discrepancy = 0
+
+        for i, group in enumerate(social_network.groups):
+            if group.n > strategy[i] and group.r > 0:  # Ensure there are agents left to moderate and r is nonzero
+                discrepancy = abs(group.o_1 - group.o_2)
+                if discrepancy > best_discrepancy:
+                    best_discrepancy = discrepancy
+                    best_index = i
+
+        # If no valid group is found, break
+        if best_index == -1:
+            break
+
+        # Calculate effort required to moderate one agent in the selected group
+        selected_group = social_network.groups[best_index]
+        effort = math.ceil(abs(selected_group.o_1 - selected_group.o_2) * selected_group.r)
+
+        # If we can afford moderating one more agent, apply it
+        if remaining_budget >= effort:
+            strategy[best_index] += 1
+            remaining_budget -= effort
+        else:
+            break  # Stop if we can't afford the next moderation step
+
+    return strategy

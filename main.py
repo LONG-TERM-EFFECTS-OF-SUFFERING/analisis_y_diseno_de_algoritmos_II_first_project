@@ -1,4 +1,6 @@
 from typing import List
+import os
+from tabulate import tabulate  # Librería para mostrar tablas bonitas
 
 from algorithms.brute_force import brute_force
 from algorithms.dynamic import dynamic, get_solution_value
@@ -62,15 +64,62 @@ def write_ouput(path: str, social_network: SocialNetwork, strategy: List[int]) -
 		file.write('\n'.join(map(str, strategy)))
 
 
-if __name__ == "__main__":
-	path = "BateriaPruebas/Prueba30.txt"
+def run_tests(directory: str, num_tests: int):
+	"""
+	Runs all test cases from a given directory and summarizes the results in a table.
 
-	social_network = load_social_network_from_txt(path)
-	# strategy_1 = brute_force(social_network)
-	# network_1 = apply_strategy(social_network, strategy_1)
-	# strategy_2  = get_solution_value(social_network)
-	strategy_2  = dynamic(social_network)
-	network_2 = apply_strategy(social_network, strategy_2)
+	Parameters
+	----------
+	directory : str
+		The folder where the test files are located.
+	num_tests : int
+		The number of test files (assumes they are named Prueba1.txt, Prueba2.txt, ...).
+	"""
+	results = []
+
+	for i in range(1, num_tests + 1):
+		filename = os.path.join(directory, f"Prueba{i}.txt")
+
+		if not os.path.exists(filename):
+			print(f"Warning: {filename} not found. Skipping...")
+			continue
+
+		# Cargar la red social desde el archivo
+		social_network = load_social_network_from_txt(filename)
+		max_effort = social_network.r_max
+
+		# Aplicar la estrategia voraz basada en reducción absoluta
+		strategy_absolute = greedy_absolute_reduction(social_network)
+		required_effort_absolute = calculate_effort(social_network, strategy_absolute)
+		modified_network_absolute = apply_strategy(social_network, strategy_absolute)
+		conflict_absolute = calculate_internal_conflict(modified_network_absolute)
+
+		# Aplicar la estrategia dinámica para obtener el valor óptimo de la solución
+		strategy_dynamic = dynamic(social_network)
+		required_effort_dynamic = calculate_effort(social_network, strategy_dynamic)
+		modified_network_dynamic = apply_strategy(social_network, strategy_dynamic)
+		conflict_dynamic = calculate_internal_conflict(modified_network_dynamic)
+
+		# Puedes agregar más estrategias aquí si lo deseas
+
+		# Guardar los resultados
+		results.append([f"Prueba{i}", max_effort, conflict_absolute, required_effort_absolute, conflict_dynamic, required_effort_dynamic])
+
+	# Mostrar los resultados en una tabla
+	headers = ["Test Case", "Max effort", "Conflict (Absolute Reduction)", "Require effort", "Conflict (Optimal)", "Required effort"]
+	print(tabulate(results, headers=headers, tablefmt="plain"))
+
+
+
+if __name__ == "__main__":
+	# path = "BateriaPruebas/Prueba17.txt"
+
+	# social_network = load_social_network_from_txt(path)
+	# # strategy_1 = brute_force(social_network)
+	# # network_1 = apply_strategy(social_network, strategy_1)
+	# # strategy_2  = get_solution_value(social_network)
+	# strategy_2  = dynamic(social_network)
+	# network_2 = apply_strategy(social_network, strategy_2)
 	# strategy_3 = greedy_absolute_reduction(social_network)
 	# network_3 = apply_strategy(social_network, strategy_3)
 	# strategy_4 = greedy_moderation_efficiency(social_network)
@@ -80,30 +129,37 @@ if __name__ == "__main__":
 	# strategy_6 = greedy_moderation_by_discrepancy(social_network)
 	# network_6 = apply_strategy(social_network, strategy_6)
 
-	print(social_network)
+	# print(social_network)
 
-	# print("Brute force strategy:")
-	# print("Strategy:", strategy_1)
-	# print(network_1)
+	# # print("Brute force strategy:")
+	# # print("Strategy:", strategy_1)
+	# # print(network_1)
 
-	print("\nDynamic programming strategy:")
-	print("Strategy:", strategy_2)
-	print(network_2)
+	# # print("\nDynamic programming strategy:")
+	# # print("Strategy:", strategy_2)
+	# # print(network_2)
 
 	# print("\nGreedy absolute reduction strategy:")
 	# print("Strategy:", strategy_3)
-	# print(network_3)
+	# print("Internal conflict:", calculate_internal_conflict(network_3))
+	# #print(network_3)
 
 	# print("\nGreedy moderation efficiency strategy:")
 	# print("Strategy:", strategy_4)
-	# print(network_4)
+	# print("Internal conflict:", calculate_internal_conflict(network_4))
+	# #print(network_4)
 
 	# print("\nGreedy moderation by discrepancy and rigidity strategy:")
 	# print("Strategy:", strategy_5)
-	# print(network_5)
+	# print("Internal conflict:", calculate_internal_conflict(network_5))
+	# #print(network_5)
 
 	# print("\nGreedy moderation by discrepancy strategy:")
 	# print("Strategy:", strategy_6)
-	# print(network_6)
+	# print("Internal conflict:", calculate_internal_conflict(network_6))
+	# #print(network_6)
 
-	# write_ouput("output.txt", social_network, brute_force_strategy)
+	# # write_ouput("output.txt", social_network, brute_force_strategy)
+
+	# Ejecutar la batería de pruebas
+	run_tests("BateriaPruebas", 20)

@@ -38,7 +38,9 @@ def greedy_absolute_reduction(social_network: SocialNetwork) -> List[int]:
         for i, group in enumerate(groups):
             if group.n > 0:  # Only consider groups with remaining agents
                 reduction_per_agent = (group.o_1 - group.o_2) ** 2
-                effort_per_agent = math.ceil(abs(group.o_1 - group.o_2) * group.r)
+                #effort_per_agent = math.ceil(abs(group.o_1 - group.o_2) * group.r)
+                effort_per_agent = abs(group.o_1 - group.o_2) * group.r
+
 
                 if effort_per_agent <= remaining_r:
                     reduction_ratio = reduction_per_agent / effort_per_agent if effort_per_agent > 0 else 0
@@ -60,7 +62,7 @@ def greedy_absolute_reduction(social_network: SocialNetwork) -> List[int]:
 
         if agents_to_moderate > 0:
             strategy[best_index] += agents_to_moderate
-            remaining_r -= agents_to_moderate * best_effort  # Deduct effort spent
+            remaining_r -= math.ceil(agents_to_moderate * best_effort) # Deduct effort spent
 
             # Update group information
             groups[best_index] = create_agent_group(
@@ -218,7 +220,7 @@ def greedy_moderation_by_discrepancy(social_network: SocialNetwork) -> List[int]
     remaining_budget = social_network.r_max
 
     while remaining_budget > 0:
-        # Select the group with the highest discrepancy-to-rigidity ratio
+        # Select the group with the highest discrepancy
         best_index = -1
         best_discrepancy = 0
 

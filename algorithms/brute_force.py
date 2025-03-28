@@ -3,7 +3,7 @@ from typing import List
 
 from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_effort,
-                                    calculate_internal_conflict)
+                                    calculate_internal_conflict, calculate_max_effort)
 
 
 def brute_force(social_network: SocialNetwork) -> List[int]:
@@ -35,6 +35,11 @@ def brute_force(social_network: SocialNetwork) -> List[int]:
 	- This implementation is suitable only for small networks due to its
 		exponential time complexity.
 	"""
+	# Check if the effort required to moderate the entire social network is less than or equal to the max effort allowed.
+	# If we have enough effort to moderate the entire social network, the optimal strategy is to moderate all agents in all groups.
+	if calculate_max_effort(social_network) <= social_network.r_max:
+		return [group.n for group in social_network.groups]
+
 	groups = social_network.groups
 	max_effort = social_network.r_max
 	ranges = [range(0, group.n + 1) for group in groups]

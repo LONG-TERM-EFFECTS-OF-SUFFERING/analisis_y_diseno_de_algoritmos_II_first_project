@@ -4,8 +4,8 @@ from typing import List
 import numpy as np
 
 from classes.social_network import (SocialNetwork, apply_strategy,
-                                    calculate_effort,
-                                    calculate_internal_conflict)
+									calculate_effort,
+									calculate_internal_conflict, calculate_max_effort)
 
 
 def get_solution_value(social_network: SocialNetwork):
@@ -76,6 +76,11 @@ def dynamic(social_network: SocialNetwork) -> List[int]:
 	   the maximum effort, and max(n_i) is the maximum number of agents in any group.
 	- Space complexity: O(n * R_max).
 	"""
+	# Check if the effort required to moderate the entire social network is less than or equal to the max effort allowed.
+	# If we have enough effort to moderate the entire social network, the optimal strategy is to moderate all agents in all groups.
+	if calculate_max_effort(social_network) <= social_network.r_max:
+		return [group.n for group in social_network.groups]
+
 	groups = social_network.groups
 	n = len(groups)
 	r_max = social_network.r_max

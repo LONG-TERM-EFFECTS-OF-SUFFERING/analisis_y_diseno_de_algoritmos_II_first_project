@@ -165,3 +165,33 @@ def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 			)
 
 	return effort
+
+
+def calculate_max_effort(social_network: SocialNetwork):
+	"""
+	Calculates the effort required to reduce the entire social network's internal conflict to zero.
+
+	The effort is calculated according to the formula:
+	Effort(SN,E) = sum(ceil(|o_i,1 - o_i,2| * r_i * e_i))
+	where e_i is the number of agents in group i whose opinions will be modified.
+
+	Parameters
+	----------
+	social_network: SocialNetwork
+
+	Returns
+	-------
+	int
+		The total effort required to moderate the entire social network and reduce its internal conflict to zero.
+	"""
+	groups = social_network.groups
+	effort = 0
+
+	for i, group in enumerate(groups):
+		e_i = group.n
+		if e_i > 0:
+			effort += math.ceil(
+				abs(group.o_1 - group.o_2) * group.r * e_i
+			)
+
+	return effort

@@ -1,3 +1,4 @@
+import heapq
 import math
 from typing import List
 from classes.agent_group import create_agent_group
@@ -77,66 +78,6 @@ def greedy_absolute_reduction(social_network: SocialNetwork) -> List[int]:
 
 	return strategy
 
-
-def greedy_moderation_efficiency(social_network: SocialNetwork) -> List[int]:
-	"""
-	Determines a moderation strategy using a greedy approach that prioritizes groups based on
-	their efficiency in reducing internal conflict per unit of effort spent.
-
-	This strategy iteratively selects the group that provides the highest reduction in internal
-	conflict per unit of effort until the available effort (R_max) is exhausted.
-
-	Parameters
-	----------
-	social_network : SocialNetwork
-		The social network containing agent groups and the maximum available effort.
-
-	Returns
-	-------
-	List[int]
-		A list representing the number of agents to be moderated in each group.
-		Example: [0, 2, 3, 0] means 0 agents moderated in the first group, 2 in the second, etc.
-
-	Notes
-	-----
-	- The efficiency of moderating a group is calculated as:
-	  efficiency = (conflict reduction) / (effort required)
-	- The algorithm stops when there is no more available effort or no further efficient modifications.
-	"""
-	groups = social_network.groups
-	r_max = social_network.r_max
-	strategy = [0] * len(groups)
-
-	while r_max > 0:
-		options = []
-
-		for i, group in enumerate(groups):
-			if group.n > strategy[i]:  # Solo considerar si aún quedan agentes en el grupo
-				e_i = strategy[i] + 1  # Probar moderar un agente más
-				effort = math.ceil(abs(group.o_1 - group.o_2) * group.r * e_i)
-
-				if effort <= r_max:
-					new_conflict = calculate_internal_conflict(
-						apply_strategy(social_network, [strategy[j] + (1 if j == i else 0) for j in range(len(groups))])
-					)
-					conflict_reduction = calculate_internal_conflict(social_network) - new_conflict
-					efficiency = conflict_reduction / effort if effort > 0 else float('inf')
-					options.append((efficiency, -conflict_reduction, i))  # Se ordenará por eficiencia y reducción absoluta
-
-		if not options:
-			break  # No hay más opciones viables
-
-		options.sort(reverse=True)  # Ordenar de mayor a menor eficiencia
-
-		best_efficiency, _, best_group = options[0]
-
-		if best_efficiency == 0:
-			break  # No se puede reducir más el conflicto
-
-		strategy[best_group] += 1
-		r_max -= math.ceil(abs(groups[best_group].o_1 - groups[best_group].o_2) * groups[best_group].r)
-
-	return strategy
 
 
 def greedy_moderation_by_discrepancy_rigidity_one_at_a_time(social_network: SocialNetwork) -> List[int]:
@@ -308,10 +249,6 @@ def greedy_moderation_by_discrepancy_rigidity(social_network: SocialNetwork) -> 
 		if best_effort == 0:
 			break
 
-		# Calculate effort required to moderate one agent in the selected group
-		# selected_group = social_network.groups[best_index]
-		# effort = math.ceil(abs(selected_group.o_1 - selected_group.o_2) * selected_group.r)
-
 		# Determine how many agents we can moderate
 		group = groups[best_index]
 		max_agents_moderatable = group.n # We can't moderate more than we have
@@ -330,5 +267,140 @@ def greedy_moderation_by_discrepancy_rigidity(social_network: SocialNetwork) -> 
 				group.o_2,
 				group.r
 			)
+
+	return strategy
+
+
+def greedy_absolute_reduction_heap(social_network: SocialNetwork) -> List[int]:
+	"""
+	Greedy strategy for moderation using absolute reduction optimized with a heap.
+
+	Parameters:
+	- social_network: Object containing groups of agents and maximum effort available.
+
+	Returns:
+	- List of integers indicating how many agents were moderated per group.
+	"""
+	# Check if the effort required to moderate the entire social network is less than or equal to the max effort allowed.
+	# If we have enough effort to moderate the entire social network, the optimal strategy is to moderate all agents in all groups.
+	if calculate_max_effort(social_network) <= social_network.r_max:
+		return [group.n for group in social_network.groups]
+
+	groups = social_network.groups[:]
+	n = len(groups)
+	strategy = [0] * n  # Initialize strategy with zero moderation for all groups
+	remaining_budget = social_network.r_max
+
+	# Min-heap (negate value to simulate max-heap)
+	heap = []
+	for i, group in enumerate(groups):
+		if group.r > 0:
+			#reduction_per_agent = (group.o_1 - group.o_2) ** 2
+			#effort_per_agent = abs(group.o_1 - group.o_2) * group.r
+			reduction = abs(group.o_1 - group.o_2) / group.r  # Reduction per unit effort
+			heapq.heappush(heap, (-reduction, i))
+
+	while remaining_budget > 0 and heap:
+		_, best_index = heapq.heappop(heap)
+		group = groups[best_index]
+
+		effort_per_agent = abs(group.o_1 - group.o_2) * group.r
+		if effort_per_agent == 0 or effort_per_agent > remaining_budget:
+			continue  # Avoid division by zero or exceeding budget
+
+		max_agents_moderatable = group.n  # Can't moderate more than we have
+		max_possible = remaining_budget // effort_per_agent  # Max we can afford
+		agents_to_moderate = min(max_agents_moderatable, max_possible)
+
+		if agents_to_moderate > 0:
+			strategy[best_index] = agents_to_moderate
+			remaining_budget -= math.ceil(agents_to_moderate * effort_per_agent)
+
+	return strategy
+
+
+
+def counting_sort_by_digit(arr, exp):
+	n = len(arr)
+	output = [0] * n
+	count = [0] * 10  # Dígitos 0-9
+
+	# Contar ocurrencias de cada dígito en la posición actual
+	for group, value in arr:
+		index = (value // exp) % 10
+		count[index] += 1
+
+	# Transformar count[i] en la posición acumulativa
+	for i in range(1, 10):
+		count[i] += count[i - 1]
+
+	# Construir el arreglo ordenado
+	for i in range(n - 1, -1, -1):
+		group, value = arr[i]
+		index = (value // exp) % 10
+		output[count[index] - 1] = (group, value)
+		count[index] -= 1
+
+	return output
+
+def radix_sort_groups(groups):
+	# Convertimos la métrica en enteros multiplicando por 1000000 para precisión
+	factor = 1000000000
+	processed_groups = []
+
+	for group in groups:
+		if group.r > 0:  # Evitamos división por cero
+			ratio = abs(group.o_1 - group.o_2) / group.r
+			scaled_ratio = int(round(ratio * factor))  # Redondeamos para evitar errores de truncamiento
+			processed_groups.append((group, scaled_ratio))
+
+	if not processed_groups:
+		return []
+
+	# Encontrar el valor máximo para determinar la cantidad de dígitos
+	max_value = max(value for _, value in processed_groups)
+
+	# Aplicar Radix Sort por cada dígito
+	exp = 1
+	while max_value // exp > 0:
+		processed_groups = counting_sort_by_digit(processed_groups, exp)
+		exp *= 10
+
+	# Extraer los grupos ordenados
+	return [group for group, _ in processed_groups]
+
+def greedy_moderation_with_radix_sort(social_network: SocialNetwork) -> List[int]:
+
+	# Check if the effort required to moderate the entire social network is less than or equal to the max effort allowed.
+	# If we have enough effort to moderate the entire social network, the optimal strategy is to moderate all agents in all groups.
+	if calculate_max_effort(social_network) <= social_network.r_max:
+		return [group.n for group in social_network.groups]
+
+	n = len(social_network.groups)
+	strategy = [0] * n  # Inicializamos la estrategia de moderación
+	remaining_r = social_network.r_max  # Esfuerzo disponible
+
+	# Ordenamos los grupos por la métrica de prioridad usando Radix Sort
+	sorted_groups = radix_sort_groups(social_network.groups)
+	sorted_groups.reverse()  # Invertimos el orden para que el mayor esté al principio
+
+	for group in sorted_groups:
+		if remaining_r <= 0:
+			break
+
+		index = social_network.groups.index(group)
+		max_agents_moderatable = group.n
+
+		effort_per_agent = abs(group.o_1 - group.o_2) * group.r
+		if effort_per_agent == 0 or effort_per_agent > remaining_r:
+			continue
+
+		max_possible = remaining_r // effort_per_agent  # Máximo que podemos moderar
+
+		agents_to_moderate = min(max_agents_moderatable, max_possible)
+
+		if agents_to_moderate > 0:
+			strategy[index] += agents_to_moderate
+			remaining_r -= math.ceil(agents_to_moderate * effort_per_agent)
 
 	return strategy

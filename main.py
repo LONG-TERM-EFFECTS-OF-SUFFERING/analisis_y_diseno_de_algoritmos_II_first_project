@@ -4,7 +4,7 @@ from tabulate import tabulate  # Librería para mostrar tablas bonitas
 
 from algorithms.brute_force import brute_force
 from algorithms.dynamic import dynamic
-from algorithms.greedy import greedy_absolute_reduction, greedy_moderation_by_discrepancy_rigidity
+from algorithms.greedy import greedy_absolute_reduction, greedy_absolute_reduction_heap, greedy_moderation_by_discrepancy_rigidity, greedy_moderation_with_radix_sort
 from classes.agent_group import create_agent_group
 from classes.social_network import (SocialNetwork, apply_strategy,
 									calculate_effort,
@@ -89,7 +89,7 @@ def run_tests(directory: str, num_tests: int):
 		#max_effort = social_network.r_max
 
 		# Aplicar la estrategia voraz basada en reducción absoluta
-		strategy_absolute = greedy_absolute_reduction(social_network)
+		strategy_absolute = greedy_moderation_with_radix_sort(social_network)
 		#required_effort_absolute = calculate_effort(social_network, strategy_absolute)
 		modified_network_absolute = apply_strategy(social_network, strategy_absolute)
 		conflict_absolute = calculate_internal_conflict(modified_network_absolute)

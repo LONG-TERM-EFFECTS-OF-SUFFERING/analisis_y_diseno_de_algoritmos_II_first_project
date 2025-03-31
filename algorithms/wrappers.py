@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 from algorithms.brute_force import brute_force
-from algorithms.dynamic import dynamic
+from algorithms.dynamic import dynamic_bottom_up
 from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_effort,
                                     calculate_internal_conflict)
@@ -20,7 +20,7 @@ def modciFB(social_network: SocialNetwork) -> Tuple[List[int], float, float]:
 	return (strategy, *calculate_effort_and_IC(SocialNetwork, strategy))
 
 def modciPD(social_network: SocialNetwork) -> Tuple[List[int], float, float]:
-	strategy = dynamic(social_network)
+	strategy = dynamic_bottom_up(social_network)
 
 	return (strategy, *calculate_effort_and_IC(SocialNetwork, strategy))
 

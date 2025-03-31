@@ -3,6 +3,7 @@
 temp.py
 input.txt
 output.txt
+brandon.py
 
 # Ignore LaTeX build files
 *.aux

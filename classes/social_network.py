@@ -28,12 +28,12 @@ Agent groups:
 
 		return result
 
-def calculate_internal_conflict(social_network: SocialNetwork):
+def calculate_internal_conflict(social_network: SocialNetwork) -> float:
 	"""
 	Calculates the Internal Conflict (IC) value of the social network.
 
 	The internal conflict is a measure of opinion divergence across the network,
-	calculated as the weighted average of the squared differences between the two
+	calculated as the average of the squared differences between the two
 	opinions for each agent group.
 
 	Formula:
@@ -88,10 +88,6 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 	ValueError
 		If the length of the strategy does not match the number of agent groups.
 		If any strategy value exceeds the number of agents in its corresponding group.
-
-	Notes
-	-----
-	Groups where all agents are removed (e_i = n_i) will not be included in the resulting network.
 	"""
 	n = len(social_network.groups)
 	groups = social_network.groups
@@ -119,7 +115,7 @@ def apply_strategy(social_network: SocialNetwork, strategy: List[int]) -> Social
 
 	return SocialNetwork(modified_groups, r_max)
 
-def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
+def calculate_effort(social_network: SocialNetwork, strategy: List[int]) -> int:
 	"""
 	Calculates the effort required to adjust opinions in the social network using the given strategy.
 
@@ -131,9 +127,9 @@ def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 	----------
 	social_network: SocialNetwork
 
-	strategy : List[int]
-		A list of integers where each value e_i indicates the number of agents in group i
-		whose opinions will be modified. Must have the same length as the number of agent groups.
+	strategy: List[int]
+		A sequence of integers [e_0,e_1,...,e_(n - 1)] where e_i indicates the
+		number of agents to be removed from group i.
 
 	Returns
 	-------
@@ -167,7 +163,7 @@ def calculate_effort(social_network: SocialNetwork, strategy: List[int]):
 	return effort
 
 
-def calculate_max_effort(social_network: SocialNetwork):
+def calculate_max_effort(social_network: SocialNetwork) -> int:
 	"""
 	Calculates the effort required to reduce the entire social network's internal conflict to zero.
 

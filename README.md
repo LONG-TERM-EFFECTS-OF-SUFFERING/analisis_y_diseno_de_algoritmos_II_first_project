@@ -88,20 +88,6 @@ is minimized.
 
 ## Analysis
 
-- Each agent in a group of agents ($a_i$) contributes
-
-$$
-\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil
-$$
-
-to the total effort. For this reason, we can say that the maximum number of agents that can be changed for a strategy ($e_i$) is
-
-$$
-\min(n_i,\frac{ R_{ \max } }{ \left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \right \rceil })
-$$
-
-> We use $\min$ to ensure that no more agents are moderated than are available.
-
 - Each group of agents $a_i$ contributes
 
 $$

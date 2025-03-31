@@ -5,7 +5,234 @@
 
 \maketitle
 
+\tableofcontents
 
-\section{Introduction}
+\newpage
+
+\section{Programación dinámica}
+
+\subsection{Caracterización de la subestructura óptima}
+
+Definimos la notación $\operatorname{ IC }(i,r)$ como el problema de minimizar el conflicto interno utilizando los primeros $i$ grupos de agentes con un esfuerzo disponible $r$. La notación $\operatorname{ modIC }(i,r)$ denota la secuencia de decisiones óptimas (es decir, el número de agentes a moderar en cada grupo) para los grupos $i$ hasta $n$ utilizando $r$ de esfuerzo, donde la secuencia vacía $\langle \rangle$ indica que no se realizan más moderaciones.
+
+\begin{equation}
+	\operatorname{ modIC }(i,r) = \begin{cases}
+		\langle \rangle                                                             & i = n + 1 \\
+		k_i :: \operatorname{ modIC }(i + 1,r - \operatorname{ e\_effort }(i,k_i))  & i \neq n
+	\end{cases}
+\end{equation}
+
+\begin{equation}
+	\operatorname{ IC }(i,R_{ \max }) = \operatorname{ modIC }(1,R_{ \max })
+\end{equation}
+
+\subsection{Valor recursivo de la solución óptima}
+
+- $\operatorname{ e\_effort }(i,k)$: es el esfuerzo requerido para \textbf{moderar} $k$ agentes del grupo $i$ ($\left \lceil |o_{ i,1 } - o_{ i,2 }| \cdot r_i \cdot k \right \rceil$).
+
+- $\operatorname{ conflict }(i,k)$: es la contribución al conflicto interno del grupo $i$ luego de \textbf{moderar} $k$ agentes ($(n_i - k) * (o_{ i,1 } - o_{ i,2 })^2$).
+
+\subsubsection{Normalización en cada paso}
+
+\begin{equation}
+	\operatorname{ { recIC }_1 }(i,r) = \begin{cases}
+		0                                                                                                                                                                                        & i = 0 \\
+		\min_{ 0 \leq k_i \leq n_i } \left \{ \frac{ (i - 1) \cdot \operatorname{ { recIC }_1 }(i - 1,r - \operatorname{ e\_effort }(i,k_i)) + \operatorname{ conflict }(i,k_i) }{ i } \right \} & i > 0
+	\end{cases}
+\end{equation}
+
+\begin{equation}
+	\operatorname{ valueIC }(n,R_{ \max }) = \operatorname{ { recIC }_1 }(n,R_{ \max })
+\end{equation}
+
+\subsubsection{Acumulación total y normalización final}
+
+\begin{equation}
+	\operatorname{ { recIC }_2 }(i,r) = \begin{cases}
+		0                                                                                                                                             & i = 0 \\
+		\min_{ 0 \leq k_i \leq n_i } \{\operatorname{ { recIC }_2 }(i - 1,r - \operatorname{ e\_effort }(i,k_i)) + \operatorname{ conflict }(i,k_i)\} & i > 0
+	\end{cases}
+\end{equation}
+
+\begin{equation}
+	\operatorname{ valueIC }(n,R_{ \max }) = \frac{ \operatorname{ { recIC }_2 }(n,R_{ \max }) }{ n }
+\end{equation}
+
+\subsubsection{Justificación equivalencia}
+
+Sea $F(i,r)$ la suma total del conflicto acumulado en los $i$ primeros grupos.
+
+Ambas formulaciones calculan el mismo valor $\operatorname{ valueIC }(n,R_{ \max }) = \frac{ 1 }{ n } \sum_{ i = 0 }^{ n - 1 } \operatorname{ conflict }(i,k_i)$.
+
+\begin{itemize}
+	\item Caso base: para $i = 0$, ambas definiciones retornan $0$.
+	\item Paso inductivo: supongamos que para $i - 1$, $\operatorname{ { recIC }_1 }(i,r') = \frac{ F(i - 1,r') }{ i - 1 }$ y $\operatorname{ { recIC }_2 }(i,r') =F(i - 1,r')$.
+	\item \begin{itemize}
+			\item $\operatorname{ { recIC }_1 }$.
+			\begin{align}
+				& \operatorname{ { recIC }_1 }(i,r) = \frac{ (i - 1) \cdot \operatorname{ { recIC }_1 }(i - 1,r - \operatorname{ e\_effort }(i,k_i)) + \operatorname{ conflict }(i,k_i) }{ i } \\
+				& = \frac{ F(i - 1,r') + \operatorname{ conflict }(i,k_i) }{ i }
+			\end{align}
+			\item $\operatorname{ { recIC }_2 }$.
+			\begin{align}
+				& \operatorname{ { recIC }_2 }(i,r) = \operatorname{ { recIC }_2 }(i - 1,r - \operatorname{ e\_effort }(i,k_i)) + \operatorname{ conflict }(i,k_i) \\
+				& = F(i - 1,r') + \operatorname{ conflict }(i,k_i)
+			\end{align}
+		\end{itemize}
+\end{itemize}
+
+Al final $\operatorname{ valueIC }(n,R_{ \max }) = \frac{ \operatorname{ { recIC }_2 }(n,R_{ \max }) }{ n } = \frac{ F(n,R_{ \max }) }{ n }$, que coincide con $\operatorname{ { recIC }_1 }(n,R_{ \max })$.
+
+Lo cual tiene sentido, minimizar para $\frac{ F(i - 1,r') + \operatorname{ conflict }(i,k_i) }{ i }$ es equivalente a minimizar $F(i - 1,r') + \operatorname{ conflict }(i,k_i)$ porque dividir por una constante positiva ($i$) no cambia la elección del $k_i$ que da el mínimo valor.
+
+\subsection{Algoritmo para calcular el costo de una solución óptima}
+
+Para calcular el costo óptimo mediante programación dinámica, utilizamos un bottom-up que construye sistemáticamente la solución a partir de los casos base.
+
+Definimos una matriz $storage$ donde $storage[i][r]$ representa el mínimo conflicto interno posible considerando los primeros $i$ grupos con un esfuerzo disponible $r$. El algoritmo completa esta matriz iterativamente:
+
+\begin{algorithm}[H]
+	\caption{cálculo del costo óptimo mediante programación dinámica (bottom-up)}
+	\begin{algorithmic}[1]
+		\State $n \gets$ número de grupos
+		\State $r_{max} \gets$ esfuerzo máximo disponible
+		\State inicializar $storage[0][r] = 0$ para todo $r \in [0,r_{ \max }]$
+		\State inicializar $storage[i][r] = \infty$ para todo $i \in [1,n]$, $r \in [0, r_{ \max }]$
+
+		\For{ $i = 1$ hasta $n$ }
+			\State obtener grupo actual: $a_{ i - 1 } = \langle n_i,o_{ i,1 },o_{ i,2 },r_i \rangle$
+			\State $conflict\_per\_agent \gets (o_{ i,1 } - o_{ i,2 })^2$
+			\State $effort\_per\_agent \gets |o_{ i,1 } - o_{ i,2 }| \cdot r_i$
+
+			\For{ $r = 0$ hasta $r_{ \max }$ }
+				\For{ $k = 0$ hasta $n_i$ }
+					\State $required\_effort \gets \lceil effort\_per\_agent \cdot k \rceil$
+					\If{ $required\_effort \leq r$ }
+						\State $remaining\_conflict \gets (n_i - k) \cdot conflict\_per\_agent$
+						\State $total\_conflict \gets storage[i - 1][r-required\_effort] + remaining\_conflict$
+						\If{ $total\_conflict < storage[i][r]$ }
+							\State $storage[i][r] \gets total\_conflict$
+						\EndIf
+					\EndIf
+				\EndFor
+			\EndFor
+		\EndFor
+
+		\State \Return $storage[n][r_{ \max }]$
+	\end{algorithmic}
+\end{algorithm}
+
+El valor $storage[n][r_{ \max }]$ representa la suma total del conflicto mínimo posible. Para obtener el conflicto interno normalizado según la definición del problema, debemos dividir este valor por $n$:
+
+\begin{equation}
+	\operatorname{ valueIC }(n,R_{ \max }) = \frac{ storage[n][r_{ \max }] }{ n }
+\end{equation}
+
+\subsection{Algoritmo para calcular una solución óptima}
+
+Mientras que la sección anterior nos permite calcular el valor mínimo de conflicto interno, también necesitamos determinar la estrategia óptima que produce dicho valor. Para reconstruir esta estrategia, utilizamos una matriz adicional durante el proceso que registra las decisiones óptimas.
+
+Definimos una matriz $decisions$ donde $decisions[i][r]$ representa el número óptimo de agentes a moderar del grupo $i$ cuando se dispone de un esfuerzo $r$. Esta matriz se completa durante el mismo proceso iterativo en que calculamos el costo mínimo.
+
+\begin{algorithm}[H]
+	\caption{registro de decisiones (extensión del algoritmo anterior)}
+	\begin{algorithmic}
+		\State inicializar $decisions[i][r] = 0$ para todo $i \in [0,n]$, $r \in [0,r_{ \max }]$
+		\State ...
+		\If{ $total\_conflict < storage[i][r]$ }
+			\State $storage[i][r] \gets total\_conflict$
+			\State $decisions[i][r] \gets k$ \Comment{registramos la decisión óptima}
+		\EndIf
+		\State ...
+	\end{algorithmic}
+\end{algorithm}
+
+Una vez completadas las matrices $storage$ y $decisions$, podemos reconstruir la estrategia óptima mediante un proceso de retroceso:
+
+\begin{algorithm}[H]
+	\caption{reconstrucción de la estrategia óptima}
+	\begin{algorithmic}[1]
+		\State $n \gets$ número de grupos
+		\State $r_{ \max } \gets$ esfuerzo máximo disponible
+		\State inicializar $optimal\_strategy$ como un arreglo de $n$ ceros
+		\State $remaining\_effort \gets r_{ \max }$
+
+		\For{$i = n$ hasta $1$ (en orden descendente)}
+			\State $k \gets decisions[i][remaining\_effort]$ \Comment{número óptimo de agentes a moderar}
+			\State $optimal\_strategy[i - 1] \gets k$
+
+			\State obtener grupo actual: $a_{ i - 1 } = \langle n_i,o_{ i,1 },o_{ i,2 },r_i \rangle$
+			\State $effort\_per\_agent \gets |o_{ i,1 } - o_{ i,2 }| \cdot r_i$
+			\State $required\_effort \gets \lceil effort\_per\_agent \cdot k \rceil$
+			\State $remaining\_effort \gets remaining\_effort - required\_effort$
+		\EndFor
+
+		\State \Return $optimal\_strategy$
+	\end{algorithmic}
+\end{algorithm}
+
+El resultado $optimal\_strategy$ es un arreglo donde la posición $i$ indica cuántos agentes deben ser moderados del grupo $i$ para lograr el mínimo conflicto interno posible. Esta estrategia satisface la restricción de que su esfuerzo total no excede $R_{ \max }$.
+
+La estrategia resultante $E = \langle e_0,e_1,\ldots,e_{ n - 1 } \rangle$ representa nuestra solución final al problema, donde cada $e_i$ indica exactamente cuántos agentes del grupo $i$ deben ser moderados para minimizar el conflicto interno de la red social.
+
+\subsection{Complejidad}
+
+\subsubsection{Rellenando la matriz $storage$ y $decisions$}
+
+\begin{algorithm}[H]
+	\caption{estructura del cálculo del costo óptimo mediante programación dinámica (bottom-up)}
+	\begin{algorithmic}[1]
+		\State ...
+		\For{ $i = 1$ hasta $n$ }
+			\State ...
+			\For{ $r = 0$ hasta $r_{ \max }$ }
+				\For{ $k = 0$ hasta $n_i$ }
+					\State ...
+				\EndFor
+			\EndFor
+		\EndFor
+
+		\State \Return $storage[n][r_{ \max }]$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}
+	\item Temporal: $O(n \cdot R_{ \max } \cdot \max(n_i))$, donde $n$ es el número de grupos, $R_{ \max }$ es el esfuerzo máximo disponible y $\max(n_i)$ es el número máximo de agentes en cualquier grupo.
+	\item Espacial: $O(n \cdot R_{ \max })$, donde $n$ es el número de grupos, $R_{ \max }$ es el esfuerzo máximo disponible.
+\end{itemize}
+
+\begin{quote}
+	Esto es válido porque en el ciclo interior, las operaciones que se hacen son asignaciones, es decir, tienen complejidad $O(1)$.
+\end{quote}
+
+\subsubsection{Recuperando la solución de la matriz $decisions$}
+
+\begin{algorithm}[H]
+	\caption{estructura de la reconstrucción de la estrategia óptima}
+	\begin{algorithmic}[1]
+		\State ...
+		\State inicializar $optimal\_strategy$ como un arreglo de $n$ ceros
+		\State ...
+
+		\For{$i = n$ hasta $1$ (en orden descendente)}
+			\State ...
+		\EndFor
+
+		\State \Return $optimal\_strategy$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}
+	\item Temporal: $O(n)$, donde $n$ es el número de grupos.
+	\item Espacial: $O(n)$, donde $n$ es el número de grupos.
+\end{itemize}
+
+\begin{quote}
+	Esto es válido porque en el ciclo interior, las operaciones que se hacen son asignaciones, es decir, tienen complejidad $O(1)$.
+\end{quote}
+
+\hrule
+
+Por lo tanto, la complejidad temporal del algoritmo es $O(n \cdot R_{ \max } \cdot \max(n_i) + n)$ y la espacial es $O(n \cdot R_{ \max } + n)$.
 
 \end{document}

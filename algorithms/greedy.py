@@ -1,8 +1,11 @@
 import heapq
 import math
 from typing import List
+
 from classes.agent_group import create_agent_group
-from classes.social_network import SocialNetwork, calculate_internal_conflict, apply_strategy, calculate_max_effort
+from classes.social_network import (SocialNetwork, apply_strategy,
+                                    calculate_internal_conflict,
+                                    calculate_max_effort)
 
 
 def greedy_absolute_reduction(social_network: SocialNetwork) -> List[int]:

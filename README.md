@@ -2,7 +2,7 @@
 
 ## Statement
 
-A social network $SN$ is a pair $\langle SA,R_{ \max } \rangle$, where $SA$ is a sequence of agent groups $SA = \langle a_0,\dots,a_{ n - 1 } \rangle$ and $R_{ \max } \geq 0 \land R_{ \max } \in \mathbb{ N }$ represents the maximum integer value available to moderate the opinions in the network $SN$.
+A social network $SN$ is a pair $\langle SA,R_{ \max } \rangle$, where $SA$ is a sequence of agent groups $SA = \langle a_0,\dots,a_{ n - 1 } \rangle$ and $R_{ \max } > 0 \land R_{ \max } \in \mathbb{ N }$ represents the maximum integer value available to moderate the opinions in the network $SN$.
 
 An agent group $a_i$ is a tuple
 
@@ -29,8 +29,10 @@ where:
 The internal conflict value of a network $SN$ is defined as follows:
 
 $$
-\text{IC}(SN) = \frac{ \sum_{ i = 0 }^{ n - 1 }{ n_i * (o_{ i,1 } - o_{ i,2 })^2 } }{ \sum_{ i = 0 }^{ n - 1 } n_i }
+\text{IC}(SN) = \frac{ \sum_{ i = 0 }^{ n - 1 }{ n_i * (o_{ i,1 } - o_{ i,2 })^2 } }{ n }
 $$
+
+> $n$ is the number of agent groups that there are in the social network $SN$.
 
 A **strategy for opinion change** in a network $SN$ is a sequence:
 
@@ -43,8 +45,6 @@ where $e_i$ indicates the number of agents in group $i$ whose opinion will be mo
 - $e_i \in \mathbb{ N }$.
 
 - $0 \leq e_i \leq n_i$.
-
-- $\sum_{ i = 0 }^{ n - 1 } e_i \leq \sum_{ i = 0 }^{ n - 1 } n_i$.
 
 Applying an opinion change strategy $E$ to a network $SN$, denoted as $\text{ModIC}(SN,E)$, results in a new network ${SN}'$ where:
 
@@ -118,7 +118,7 @@ $$
 
 - Create a Python virtual environment: `python -m venv .venv`.
 
-	> This is optional.
+	> This is optional, but recommended.
 
 1. Install the libraries included in `requirements.txt`: `pip install -r requirements.txt`.
 

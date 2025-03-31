@@ -3,7 +3,8 @@ from typing import List
 
 from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_effort,
-                                    calculate_internal_conflict, calculate_max_effort)
+                                    calculate_internal_conflict,
+                                    calculate_max_effort)
 
 
 def brute_force(social_network: SocialNetwork) -> List[int]:

@@ -4,8 +4,9 @@ from typing import List
 import numpy as np
 
 from classes.social_network import (SocialNetwork, apply_strategy,
-									calculate_effort,
-									calculate_internal_conflict, calculate_max_effort)
+                                    calculate_effort,
+                                    calculate_internal_conflict,
+                                    calculate_max_effort)
 
 
 def get_solution_value(social_network: SocialNetwork):
@@ -76,14 +77,15 @@ def dynamic(social_network: SocialNetwork) -> List[int]:
 	   the maximum effort, and max(n_i) is the maximum number of agents in any group.
 	- Space complexity: O(n * R_max).
 	"""
-	# Check if the effort required to moderate the entire social network is less than or equal to the max effort allowed.
-	# If we have enough effort to moderate the entire social network, the optimal strategy is to moderate all agents in all groups.
-	if calculate_max_effort(social_network) <= social_network.r_max:
-		return [group.n for group in social_network.groups]
-
 	groups = social_network.groups
 	n = len(groups)
 	r_max = social_network.r_max
+
+	# Check if the effort required to moderate the entire social network is less than or equal to the
+	# max effort allowed. If we have enough effort to moderate the entire social network, the optimal
+	# strategy is to moderate all agents in all groups
+	if calculate_max_effort(social_network) <= r_max:
+		return [group.n for group in groups]
 
 	# Create DP matrices using NumPy for better performance
 	# storage[i][r] = minimum conflict achievable for first i groups with r effort
@@ -134,42 +136,4 @@ def dynamic(social_network: SocialNetwork) -> List[int]:
 		required_effort = math.ceil(k * effort_per_agent)
 		remaining_effort -= required_effort
 
-	# print_dp_matrix(storage, n, r_max)
-
 	return optimal_strategy
-
-
-def print_dp_matrix(storage, n, r_max):
-	"""
-	Prints the dynamic programming matrix for debugging purposes.
-
-	Parameters
-	----------
-	storage : numpy.ndarray
-		The DP matrix to print
-	n : int
-		Number of groups
-	r_max : int
-		Maximum effort
-	"""
-	# Print header
-	print("\t", end="")
-	for i in range(r_max + 1):
-		print(f"{i}\t", end="")
-	print("\n\t", end="")
-	for i in range(r_max + 1):
-		print("-\t", end="")
-	print()
-
-	# Print matrix rows
-	for i in range(n + 1):
-		print(f"{i}\t", end="")
-		for j in range(r_max + 1):
-			print(f"{storage[i, j]:.1f}\t", end="")
-		print()
-
-	# Print footer
-	print("\t", end="")
-	for i in range(r_max + 1):
-		print("-\t", end="")
-	print()

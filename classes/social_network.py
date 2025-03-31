@@ -8,6 +8,7 @@ class SocialNetwork(NamedTuple):
 	groups: List[AgentGroup]
 	r_max: int
 
+
 	def __str__(self) -> str:
 		"""
 		Returns a string representation of the SocialNetwork object.
@@ -59,7 +60,6 @@ def calculate_internal_conflict(social_network: SocialNetwork):
 		o_2 = group.o_2
 
 		numerator += n * (o_1 - o_2)**2
-		#denominator += n
 
 	return numerator / denominator
 
@@ -187,7 +187,7 @@ def calculate_max_effort(social_network: SocialNetwork):
 	groups = social_network.groups
 	effort = 0
 
-	for i, group in enumerate(groups):
+	for group in groups:
 		e_i = group.n
 		if e_i > 0:
 			effort += math.ceil(

@@ -1,6 +1,7 @@
 import heapq
 import math
 from typing import List
+
 from classes.agent_group import create_agent_group
 from classes.social_network import SocialNetwork, calculate_max_effort
 

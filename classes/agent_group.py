@@ -23,7 +23,7 @@ class AgentGroup(NamedTuple):
 	\to_i2 = {self.o_2}
 	\tr = {self.r}"""
 
-def create_agent_group(n: int, o_i1: int, o_i2: int, r: float):
+def create_agent_group(n: int, o_1: int, o_2: int, r: float):
 	"""
 	Initializes an AgentGroup with the specified number of agents, their opinions, and their resistance level.
 
@@ -32,10 +32,10 @@ def create_agent_group(n: int, o_i1: int, o_i2: int, r: float):
 	n (number of agents): int
 		The number of agents in the group.
 
-	o_i1 (first opinion): int
+	o_1 (first opinion): int
 		The opinion of the agents on the first statement (must be between -100 and 100).
 
-	o_i2 (second opinion): int
+	o_2 (second opinion): int
 		The opinion of the agents on the second statement (must be between -100 and 100).
 
 	r (resistance): float
@@ -46,14 +46,22 @@ def create_agent_group(n: int, o_i1: int, o_i2: int, r: float):
 	ValueError
 		If first_opinion or second_opinion is not in the range [-100, 100].
 		If resistance is not in the range [0, 1].
+	TypeError
+		If first_opinion or second_opinion is not an integer.
 	"""
-	if not -100 <= o_i1 <= 100:
+	if not isinstance(o_1, int):
+		raise TypeError("Error: the first opinion must be an integer")
+
+	if not isinstance(o_2, int):
+		raise TypeError("Error: the second opinion must be an integer")
+
+	if not -100 <= o_1 <= 100:
 		raise ValueError("Error: the first opinion must be between -100 and 100")
 
-	if not -100 <= o_i2 <= 100:
+	if not -100 <= o_2 <= 100:
 		raise ValueError("Error: the second opinion must be between -100 and 100")
 
 	if not 0 <= r <= 1:
 		raise ValueError("Error: the resistance must be between 0 and 1")
 
-	return AgentGroup(n, o_i1, o_i2, r)
+	return AgentGroup(n, o_1, o_2, r)

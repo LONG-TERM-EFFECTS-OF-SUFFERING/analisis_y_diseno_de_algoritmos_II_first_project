@@ -3,4 +3,15 @@
 temp.py
 input.txt
 output.txt
-*.txt
+brandon.py
+
+# Ignore LaTeX build files
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg

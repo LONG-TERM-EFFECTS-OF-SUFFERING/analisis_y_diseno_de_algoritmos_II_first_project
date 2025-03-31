@@ -86,7 +86,8 @@ def run_tests(directory: str, num_tests: int):
 
 		# Cargar la red social desde el archivo
 		social_network = load_social_network_from_txt(filename)
-		#max_effort = social_network.r_max
+		# print(social_network)
+		# max_effort = social_network.r_max
 
 		# Aplicar la estrategia voraz basada en reducción absoluta
 		strategy_absolute = greedy_moderation_with_radix_sort(social_network)

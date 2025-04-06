@@ -6,7 +6,6 @@ from tabulate import tabulate  # Library for displaying formatted tables
 from algorithms.brute_force import brute_force
 from algorithms.dynamic import dynamic_bottom_up, dynamic_top_down
 from algorithms.greedy import (greedy_absolute_reduction,
-                               greedy_absolute_reduction_heap,
                                greedy_moderation_by_discrepancy_rigidity,
                                greedy_moderation_with_radix_sort)
 from classes.agent_group import create_agent_group

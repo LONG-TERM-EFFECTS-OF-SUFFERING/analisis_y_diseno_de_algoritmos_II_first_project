@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from algorithms.brute_force import brute_force
-from algorithms.dynamic import dynamic
+from algorithms.dynamic import dynamic_bottom_up
 from classes.social_network import (SocialNetwork, apply_strategy,
                                     calculate_effort,
                                     calculate_internal_conflict)

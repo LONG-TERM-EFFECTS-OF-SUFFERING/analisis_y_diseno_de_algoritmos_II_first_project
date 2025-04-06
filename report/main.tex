@@ -9,6 +9,47 @@
 
 \newpage
 
+\section{Fuerza Bruta}
+
+\subsection{Complejidad}
+
+El algoritmo de fuerza bruta implementado en el proyecto presenta una complejidad temporal de orden exponencial. Esta complejidad se deriva del hecho de que el algoritmo explora de manera exhaustiva todas las posibles combinaciones de estrategias de moderación para los grupos que conforman la red social.
+
+Dado un conjunto de $k$ grupos, donde cada grupo $i$ posee $n_i$ agentes, el algoritmo genera el producto cartesiano de los posibles valores de moderación para cada grupo, los cuales varían desde $0$ hasta $n_i$. Como resultado, el número total de combinaciones evaluadas es:
+
+\begin{equation}
+	O \left(\prod_{ i = 1 }^k (n_i + 1) \right )
+\end{equation}
+
+Esta naturaleza combinatoria implica que el tiempo de ejecución del algoritmo crece de forma exponencial respecto al número de grupos y al número de agentes por grupo. En consecuencia, este enfoque resulta computacionalmente costoso para redes sociales de tamaño medio o grande, siendo únicamente viable en escenarios reducidos donde la cantidad de grupos y agentes es limitada.
+
+En el caso particular en que todos los grupos tengan el mismo número de agentes, es decir, $n_i = m$ para todo $i$, la expresión anterior se simplifica a:
+
+\begin{align}
+	& O \left((m + 1)^k \right ) \\
+	& = O(m^k)
+\end{align}
+
+Esta forma resume la naturaleza exponencial del algoritmo, destacando cómo su complejidad se incrementa significativamente al aumentar el número de grupos ($k$) o la cantidad de agentes por grupo ($m$).
+
+\subsection{Corrección}
+
+El algoritmo de fuerza bruta implementado en el proyecto garantiza la obtención de la solución óptima para el problema planteado. Este algoritmo evalúa todas las posibles combinaciones de moderación entre los grupos de agentes de la red social.
+
+Este enfoque tiene como objetivo garantizar que:
+
+\begin{itemize}
+	\item Se consideren todas las estrategias viables, es decir, todas las formas posibles de moderar entre $0$ y $n_i$ agentes en cada grupo $i$.
+
+	\item Se verifique, para cada combinación, si el esfuerzo total requerido no excede el límite permitido $R_{ \max }$.
+
+	\item Se calcule el conflicto interno resultante para cada estrategia válida.
+
+	\item Finalmente, se elija la combinación que minimiza el conflicto interno, cumpliendo así con el objetivo del problema.
+\end{itemize}
+
+Este procedimiento asegura la corrección del resultado, ya que no se omite ninguna posibilidad y se selecciona óptimamente la estrategia más beneficiosa dentro de las restricciones dadas. Sin embargo, esta exactitud tiene como costo una alta complejidad computacional, lo cual hace que el algoritmo solo sea viable para instancias pequeñas o moderadas del problema.
+
 \section{Programación dinámica}
 
 \subsection{Caracterización de la subestructura óptima}

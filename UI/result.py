@@ -13,12 +13,12 @@ class Result(ctk.CTkFrame):
 		self.controller = controller
 
 		# Main frame
-		main_frame = ctk.CTkFrame(self)
+		main_frame = ctk.CTkFrame(self, fg_color="black")
 		main_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
 		# Title
-		title_label = ctk.CTkLabel(main_frame, text="algorithm results", font=("Helvetica", 18))
-		title_label.pack(pady=10)
+		title_label = ctk.CTkLabel(main_frame, text="Algorithm results", font=("Segoe UI", 20, "bold"), text_color="white")
+		title_label.pack(pady=20)
 
 		# Button to go back to home page
 		back_button = ctk.CTkButton(
@@ -44,17 +44,17 @@ class Result(ctk.CTkFrame):
 		self.results_frame = ctk.CTkFrame(main_frame)
 		self.results_frame.pack(fill="x", pady=10)
 
-		self.lbl_effort = ctk.CTkLabel(self.results_frame, text="effort: ")
+		self.lbl_effort = ctk.CTkLabel(self.results_frame, text="Effort: ")
 		self.lbl_effort.pack(pady=5)
-		self.lbl_original_conflict = ctk.CTkLabel(self.results_frame, text="original conflict: ")
+		self.lbl_original_conflict = ctk.CTkLabel(self.results_frame, text="Original conflict: ")
 		self.lbl_original_conflict.pack(pady=5)
-		self.lbl_moderated_conflict = ctk.CTkLabel(self.results_frame, text="moderated conflict: ")
+		self.lbl_moderated_conflict = ctk.CTkLabel(self.results_frame, text="Moderated conflict: ")
 		self.lbl_moderated_conflict.pack(pady=5)
 
 		# Button to save results
 		self.btn_save = ctk.CTkButton(
 			main_frame,
-			text="save results",
+			text="Save results",
 			command=self.save_results
 		)
 		self.btn_save.pack(pady=10)
@@ -77,17 +77,17 @@ class Result(ctk.CTkFrame):
 		sizes_mod = [e * 20 for e in strategy] # Scale for visibility
 
 		# Create scatter plots
-		scatter_orig = self.ax.scatter(o_1, o_2, s=sizes_orig, alpha=0.5, color="blue", label="original")
-		scatter_mod = self.ax.scatter(o_1, o_2, s=sizes_mod, alpha=0.5, color="red", label="moderated")
+		scatter_orig = self.ax.scatter(o_1, o_2, s=sizes_orig, alpha=0.5, color="blue", label="Original")
+		scatter_mod = self.ax.scatter(o_1, o_2, s=sizes_mod, alpha=0.5, color="red", label="Moderated")
 
 		# Add reference lines at x=0 and y=0
 		self.ax.axhline(y=0, color="gray", linestyle="--", alpha=0.3)
 		self.ax.axvline(x=0, color="gray", linestyle="--", alpha=0.3)
 
 		# Set labels and title
-		self.ax.set_xlabel("opinion 1")
-		self.ax.set_ylabel("opinion 2")
-		self.ax.set_title("opinion distribution in social network")
+		self.ax.set_xlabel("Opinion 1")
+		self.ax.set_ylabel("Opinion 2")
+		self.ax.set_title("Opinion distribution in social network")
 		self.ax.legend()
 
 		# Set axis limits to show the full range of possible opinions
@@ -97,9 +97,9 @@ class Result(ctk.CTkFrame):
 		self.canvas.draw()
 
 		# Update labels
-		self.lbl_effort.configure(text=f"effort: {effort}")
-		self.lbl_original_conflict.configure(text="original conflict: " + str(self.controller.original_conflict))
-		self.lbl_moderated_conflict.configure(text=f"new conflict: {conflict}")
+		self.lbl_effort.configure(text=f"Effort: {effort}")
+		self.lbl_original_conflict.configure(text="Original conflict: " + str(self.controller.original_conflict))
+		self.lbl_moderated_conflict.configure(text=f"New conflict: {conflict}")
 
 	def save_results(self):
 		if not self.controller.social_network or not hasattr(self.controller, "strategy"):

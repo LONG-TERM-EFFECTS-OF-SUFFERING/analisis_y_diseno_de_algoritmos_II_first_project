@@ -1,6 +1,6 @@
 import os
 from tkinter import filedialog, messagebox
-from PIL import Image  # Asegúrate de tener Pillow instalado
+from PIL import Image
 
 import customtkinter as ctk
 
@@ -18,7 +18,7 @@ class Menu(ctk.CTkFrame):
         ctk.set_appearance_mode("light")  # "light" or "dark"
         ctk.set_default_color_theme("blue")
 
-        # 📸 Ruta absoluta de la imagen
+        # Absolute path of the image
         bg_path = os.path.join(os.path.dirname(__file__), "wallpapers", "page1.png")
 
         if os.path.exists(bg_path):
@@ -28,13 +28,13 @@ class Menu(ctk.CTkFrame):
             self.bg_label = ctk.CTkLabel(self, image=self.bg_image, text="")
             self.bg_label.place(relx=0.5, rely=0.5,anchor="center")
         else:
-            print(f"⚠️ Imagen de fondo no encontrada: {bg_path}")
+            print(f" Imagen de fondo no encontrada: {bg_path}")
 
-        # 🔲 Contenedor principal encima del fondo
+        # Main container on top of the background
         main_frame = ctk.CTkFrame(self, corner_radius=15, fg_color="transparent")
         main_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-        # 🏷️ Título
+        #  Title
         title_label = ctk.CTkLabel(
             main_frame,
             text="🌐 Social Network Analysis",
@@ -42,10 +42,10 @@ class Menu(ctk.CTkFrame):
         )
         title_label.pack(pady=(20, 20)) # 20 30
 
-        # 📂 Botón para cargar archivo
+        # File upload button
         self.btn_load = ctk.CTkButton(
             main_frame,
-            text="📂 Load TXT File",
+            text=" Load TXT File",
             command=self.load_file,
             width=200,
             height=40,
@@ -53,7 +53,7 @@ class Menu(ctk.CTkFrame):
         )
         self.btn_load.pack(pady=20)
 
-        # 📎 Ruta del archivo cargado
+        #  Path of the uploaded file
         self.lbl_file_path = ctk.CTkLabel(
             main_frame,
             text="No file loaded",
@@ -62,7 +62,7 @@ class Menu(ctk.CTkFrame):
         )
         self.lbl_file_path.pack(pady=5) #5
 
-        # 🔽 Selección de algoritmo
+        # Algorithm selection
         self.algorithm_var = ctk.StringVar(value="Select algorithm")
         self.dropdown_algorithm = ctk.CTkOptionMenu(
             main_frame,
@@ -74,7 +74,7 @@ class Menu(ctk.CTkFrame):
         )
         self.dropdown_algorithm.pack(pady=15) # 15
 
-        # ⚙️ Botón para ejecutar algoritmo
+        # Button to run algorithm
         self.btn_run = ctk.CTkButton(
             main_frame,
             text="⚙️ Run Algorithm",
@@ -131,7 +131,7 @@ class Menu(ctk.CTkFrame):
             self.controller.conflict = conflict
             self.controller.original_conflict = calculate_internal_conflict(self.controller.social_network)
 
-            # Cambiar a página de resultados
+            # Switch to results page
             self.controller.show_frame("Result")
             results_page = self.controller.frames["Result"]
             results_page.show_result(strategy, effort, conflict)

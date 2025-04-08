@@ -108,4 +108,4 @@ $$
 
 1. Install the libraries included in `requirements.txt`: `pip install -r requirements.txt`.
 
-2. Run the main script: `python main.py`.
+2. Run the main UI script: `python ./UI/main_UI.py`.

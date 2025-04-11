@@ -14,11 +14,11 @@ class Main(ctk.CTk):
 		ctk.CTk.__init__(self, *args, **kwargs)
 
 		self.title("Social network analysis")
-		self.geometry("700x600")
+		self.center_window(700, 600)
 
 		# Configure the appearance
-		ctk.set_appearance_mode("dark")  # Options: "dark", "light"
-		ctk.set_default_color_theme("blue")  # Options: "blue", "green", "dark-blue"
+		ctk.set_appearance_mode("dark") # Options: "dark", "light"
+		ctk.set_default_color_theme("dark-blue") # Options: "blue", "green", "dark-blue"
 
 		# Create a container for frames
 		container = ctk.CTkFrame(self)
@@ -44,6 +44,13 @@ class Main(ctk.CTk):
 
 		# Show initial frame
 		self.show_frame("Menu")
+
+	def center_window(self, width, height):
+		screen_width = self.winfo_screenwidth()
+		screen_height = self.winfo_screenheight()
+		x = (screen_width // 2) - (width // 2)
+		y = (screen_height // 2) - (height // 2)
+		self.geometry(f"{width}x{height}+{x}+{y}")
 
 	def show_frame(self, page_name):
 		"""Show a frame for the given page name"""

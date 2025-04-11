@@ -14,11 +14,11 @@ class Main(ctk.CTk):
 		ctk.CTk.__init__(self, *args, **kwargs)
 
 		self.title("Social network analysis")
-		self.center_window(700, 600)  # Centra la ventana con tamaño fijo
+		self.center_window(700, 600)
 
 		# Configure the appearance
-		ctk.set_appearance_mode("dark")  # Options: "dark", "light"
-		ctk.set_default_color_theme("dark-blue")  # Options: "blue", "green", "dark-blue"
+		ctk.set_appearance_mode("dark") # Options: "dark", "light"
+		ctk.set_default_color_theme("dark-blue") # Options: "blue", "green", "dark-blue"
 
 		# Create a container for frames
 		container = ctk.CTkFrame(self)

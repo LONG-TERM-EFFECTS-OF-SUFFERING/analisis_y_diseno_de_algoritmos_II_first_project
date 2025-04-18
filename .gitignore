@@ -1,10 +1,12 @@
 .venv/
 **/__pycache__/
 time_test/
+time_testing/
 temp.py
 input.txt
 output.txt
 brandon.py
+generate_cases.py
 
 # Ignore LaTeX build files
 *.aux

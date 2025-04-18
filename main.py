@@ -1,12 +1,13 @@
 import os
 from typing import List
+import time
 
 from tabulate import tabulate  # Library for displaying formatted tables
 
 from algorithms.brute_force import brute_force
 from algorithms.dynamic import dynamic_bottom_up, dynamic_top_down
 from algorithms.greedy import (greedy_absolute_reduction,
-                               greedy_absolute_reduction_heap,
+                               greedy_discrepancy_rigidity_heap,
                                greedy_moderation_by_discrepancy_rigidity,
                                greedy_moderation_with_radix_sort)
 from classes.agent_group import create_agent_group
@@ -97,7 +98,7 @@ def write_output(path: str, social_network: SocialNetwork, strategy: List[int]) 
 		file.write(f"{effort}\n")
 		file.write('\n'.join(map(str, strategy)))
 
-def run_tests(directory: str, num_tests: int) -> None:
+def run_tests(directory: str, num_tests: int, strategies) -> None:
 	"""
 	Executes a series of tests on social network moderation strategies and compares their performance.
 
@@ -120,33 +121,58 @@ def run_tests(directory: str, num_tests: int) -> None:
 
 		# Load the social network from the file
 		social_network = load_social_network_from_txt(filename)
-		# max_effort = social_network.r_max
+		max_effort = social_network.r_max
 
-		# Applying absolute reduction greedy strategy
-		strategy_absolute = greedy_moderation_with_radix_sort(social_network)
+		# Apply greedy strategy with radix sort
+		# start_time = time.perf_counter()
+		# strategy_absolute = greedy_moderation_with_radix_sort(social_network)
+		# end_time = time.perf_counter()
+		# execution_time_absolute = end_time - start_time
 		# required_effort_absolute = calculate_effort(social_network, strategy_absolute)
-		modified_network_absolute = apply_strategy(social_network, strategy_absolute)
-		conflict_absolute = calculate_internal_conflict(modified_network_absolute)
+		# modified_network_absolute = apply_strategy(social_network, strategy_absolute)
+		# conflict_absolute = calculate_internal_conflict(modified_network_absolute)
 
-		# Apply the greedy strategy based on absolute reduction * number of agents
-		strategy_discrepancy_rigidity = greedy_moderation_by_discrepancy_rigidity(social_network)
+		# # Apply the greedy strategy based on discrepancy/ridigity ratio
+		# strategy_discrepancy_rigidity = greedy_moderation_by_discrepancy_rigidity(social_network)
 		# required_effort_discrepancy_rigidity = calculate_effort(social_network, strategy_discrepancy_rigidity)
-		modified_network_discrepancy_rigidity = apply_strategy(social_network, strategy_discrepancy_rigidity)
-		conflict_discrepancy_rigidity = calculate_internal_conflict(modified_network_discrepancy_rigidity)
+		# modified_network_discrepancy_rigidity = apply_strategy(social_network, strategy_discrepancy_rigidity)
+		# conflict_discrepancy_rigidity = calculate_internal_conflict(modified_network_discrepancy_rigidity)
 
-		# Apply the dynamic strategy to obtain the optimal solution value
-		strategy_dynamic = dynamic_bottom_up(social_network)
+		# # Apply the dynamic strategy to obtain the optimal solution value
+		# strategy_dynamic = dynamic_bottom_up(social_network)
 		# required_effort_dynamic = calculate_effort(social_network, strategy_dynamic)
-		modified_network_dynamic = apply_strategy(social_network, strategy_dynamic)
-		conflict_dynamic = calculate_internal_conflict(modified_network_dynamic)
+		# modified_network_dynamic = apply_strategy(social_network, strategy_dynamic)
+		# conflict_dynamic = calculate_internal_conflict(modified_network_dynamic)
+
+		partial_results = [test_case_name]
+		for strategy_name, strategy_func in strategies.items():
+			start_time = time.perf_counter()
+			solution = strategy_func(social_network)
+			end_time = time.perf_counter()
+			execution_time = end_time - start_time
+			modified_network = apply_strategy(social_network, solution)
+			final_conflict = calculate_internal_conflict(modified_network)
+
+			# Save the results
+			#partial_results.append(strategy_name)
+			#partial_results.append(final_conflict)
+			partial_results.append(execution_time)
 
 		# Save the results
-		results.append([test_case_name, conflict_absolute, conflict_discrepancy_rigidity, conflict_dynamic])
+		if final_conflict > 0:
+			results.append(partial_results)
 
 	# Display the results in a tabulate table
-	headers = ["Test Case", "Conflict (Absolute Reduction)", "Conflict (Discrepancy/rigidity)", "Conflict (Optimal)"]
+	# headers = ["Test Case", "Dynamic", "Time", "Discrepancy/rigidity", "Time", "With heap", "Time", "With radix sort", "Time"]
+	headers = ["Test Case", "Discrepancy/rigidity time", "With heap time", "With radix sort time"]
 	print(tabulate(results, headers=headers, tablefmt="plain"))
 
 
 if __name__ == "__main__":
-	run_tests("tests", 2)
+	strategies = {
+	#"Dynamic": dynamic_bottom_up,
+	"Greedy discrepancy/rigidity": greedy_moderation_by_discrepancy_rigidity,
+    "Heap-Based Greedy": greedy_discrepancy_rigidity_heap,
+    "Radix Sort Greedy": greedy_moderation_with_radix_sort,
+	}
+	run_tests("time tests", 11, strategies)

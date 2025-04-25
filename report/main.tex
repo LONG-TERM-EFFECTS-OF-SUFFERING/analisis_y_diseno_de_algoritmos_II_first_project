@@ -533,16 +533,26 @@ El algoritmo de fuerza bruta implementado en el proyecto presenta una complejida
 Dado un conjunto de $k$ grupos, donde cada grupo $i$ posee $n_i$ agentes, el algoritmo genera el producto cartesiano de los posibles valores de moderación para cada grupo, los cuales varían desde $0$ hasta $n_i$. Como resultado, el número total de combinaciones evaluadas es:
 
 \begin{equation}
-	O \left(\prod_{ i = 1 }^k (n_i + 1) \right )
+	\prod_{ i = 1 }^k (n_i + 1)
 \end{equation}
+
+Sobre cada combinación, el algoritmo calcula el esfuerzo total requerido y el conflicto interno resultante (si el esfuerzo no excede el esfuerzo disponible). Esto se traduce en una complejidad temporal de:
+
+\begin{equation}
+	O \left( \prod_{ i = 1 }^k (n_i + 1) \cdot 2 k \right)
+\end{equation}
+
+\begin{quote}
+	Tanto para calcular el esfuerzo total como el conflicto interno para cada combinación implica recorrer todos los grupos, lo que añade un factor de $2 k$ a la complejidad.
+\end{quote}
 
 Esta naturaleza combinatoria implica que el tiempo de ejecución del algoritmo crece de forma exponencial respecto al número de grupos y al número de agentes por grupo. En consecuencia, este enfoque resulta computacionalmente costoso para redes sociales de tamaño medio o grande, siendo únicamente viable en escenarios reducidos donde la cantidad de grupos y agentes es limitada.
 
 En el caso particular en que todos los grupos tengan el mismo número de agentes, es decir, $n_i = m$ para todo $i$, la expresión anterior se simplifica a:
 
 \begin{align}
-	& O \left((m + 1)^k \right ) \\
-	& = O(m^k)
+	& O \left((m + 1)^k \cdot 2 k \right ) \\
+	& = O(m^k \cdot k)
 \end{align}
 
 Esta forma resume la naturaleza exponencial del algoritmo, destacando cómo su complejidad se incrementa significativamente al aumentar el número de grupos ($k$) o la cantidad de agentes por grupo ($m$).
@@ -803,9 +813,9 @@ Por lo tanto, la complejidad temporal del algoritmo es $O(n \cdot R_{ \max } \cd
 	\begin{tabular}{|l|c|c|c|}
 		\hline
 		\textbf{Estrategia} & \textbf{Complejidad temporal} & \textbf{Complejidad espacial} & \textbf{¿Óptima?} \\ \hline
-		Voraz                 & $O(n)$                                          & $O(n)$                  & No \\
-		Fuerza bruta          & $O \left (\prod_{ i = 1 }^k (n_i + 1) \right )$ & $O(k)$                  & Sí \\
-		Programación dinámica & $O(n \cdot R_{ \max } \cdot \max(n_i))$         & $O(n \cdot R_{ \max })$ & Sí \\
+		Voraz                 & $O(n)$                                  & $O(n)$                  & No \\
+		Fuerza bruta          & $O(m^k \cdot k)$                        & $O((m + 1)^k)$          & Sí \\
+		Programación dinámica & $O(n \cdot R_{ \max } \cdot \max(n_i))$ & $O(n \cdot R_{ \max })$ & Sí \\
 	\hline
 	\end{tabular}
 \end{table}

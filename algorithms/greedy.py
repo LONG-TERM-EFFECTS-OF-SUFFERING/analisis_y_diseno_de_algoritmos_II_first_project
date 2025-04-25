@@ -213,13 +213,13 @@ def greedy_moderation_with_radix_sort(social_network: SocialNetwork) -> List[int
 	strategy = [0] * n  # Initialize the moderation strategy (with all zeros)
 	remaining_r = social_network.r_max  # Available effort budget
 
-	# Define a minimun quote for rigidity
+	# Define a minimum quote for rigidity
 	r_min = 10**-6
 	priority_groups = []
 	normal_groups = []
 
 	# Separate groups into two categories: priority groups are those which its rigidity its lower than r_min. Then,
-	# the necesary effort to moderate these groups is very low and we can focus only in their discrepancy
+	# the necessary effort to moderate these groups is very low and we can focus only in their discrepancy
 	for group in social_network.groups:
 		if group.r < r_min:
 			priority_groups.append(group)
@@ -232,7 +232,7 @@ def greedy_moderation_with_radix_sort(social_network: SocialNetwork) -> List[int
 	# Sort the normal groups based on the discrepancy-to-rigidity ratio using Radix Sort
 	sorted_normal_groups = radix_sort_groups(normal_groups)
 
-	# Join the two groups, leaving first priority groups so they can be proccess first
+	# Join the two groups, leaving first priority groups so they can be process first
 	sorted_groups = sorted_priority_groups + sorted_normal_groups
 
 	# Create a dictionary that maps each group index to make it more efficient to get the group's indexes later

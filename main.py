@@ -98,7 +98,7 @@ def write_output(path: str, social_network: SocialNetwork, strategy: List[int]) 
 		file.write('\n'.join(map(str, strategy)))
 
 
-def run_tests(directory: str, num_tests: int, strategies) -> None:
+def run_tests(directory: str, num_tests: int, strategies: dict) -> None:
 	"""
 	Executes a series of tests on social network moderation strategies and compares their performance.
 
@@ -108,11 +108,14 @@ def run_tests(directory: str, num_tests: int, strategies) -> None:
 		The folder where the test files are located.
 	num_tests : int
 		The number of test files (assumes they are named test_01.txt, test_02.txt, ...).
+	strategies : dict[str, Callable]
+		A dictionary mapping strategy names to their corresponding functions. Each function should take
+		a social network object as input and return a solution for moderating internal conflict.
 	"""
 	results = []
 
 	for i in range(1, num_tests + 1):
-		test_case_name = f"test_{i:02}"  # Format test case name with leading zero if i < 10
+		test_case_name = f"test_{i:02}" # Format test case name with leading zero if i < 10
 		filename = os.path.join(directory, f"{test_case_name}.txt")
 
 		if not os.path.exists(filename):
@@ -150,8 +153,8 @@ def run_tests(directory: str, num_tests: int, strategies) -> None:
 
 if __name__ == "__main__":
 	strategies = {
-	"Dynamic": dynamic_bottom_up,
-    "Heap-Based Greedy": greedy_discrepancy_rigidity_heap,
-    "Radix Sort Greedy": greedy_moderation_with_radix_sort,
+		"Dynamic": dynamic_bottom_up,
+		"Heap-Based Greedy": greedy_discrepancy_rigidity_heap,
+		"Radix Sort Greedy": greedy_moderation_with_radix_sort,
 	}
 	run_tests("tests", 30, strategies)

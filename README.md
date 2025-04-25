@@ -109,3 +109,33 @@ $$
 1. Install the libraries included in `requirements.txt`: `pip install -r requirements.txt`.
 
 2. Run the main UI script: `python ./UI/main_UI.py`.
+
+## How to interpret the graph
+
+When you run the application and solve an instance, the interface displays a scatter plot visualizing the distribution of opinions in the social network before and after applying the selected moderation strategy.
+
+### Axes
+
+- The x-axis represents the value of opinion 1 ($o_{ i,1 }$) for each agent group.
+
+- The y-axis represents the value of opinion 2 ($o_{ i,2 }$) for each agent group.
+
+- Both axes range from $-110$ to $110$, covering the full possible range of opinions.
+
+### Points
+
+- Each point corresponds to an agent group in the network.
+
+- The **blue circles** represent the original agent groups, with the size proportional to the number of agents in each group ($n_i$).
+
+- The **red circles** represent the moderated groups, with the size proportional to the number of agents that were moderated in each group ($e_i$).
+
+---
+
+- Larger blue circles indicate groups with more agents before moderation.
+
+- Larger red circles indicate groups where more agents were moderated.
+
+- If a group was not moderated, its red circle will be very small or absent.
+
+- The overlap between blue and red circles shows which groups were affected by the strategy.
